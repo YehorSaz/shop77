@@ -10,9 +10,12 @@ import {
 } from 'react-native';
 
 import { useAppDispatch } from '../../hooks';
+import { useAppSelector } from '../../hooks/useAppSelector.ts';
+import { useTitle } from '../../hooks/useTitle.ts';
 import { listActions } from '../../redux';
 
 export const Input: FC = () => {
+  const { list } = useAppSelector(state => state.list);
   const dispatch = useAppDispatch();
 
   const inputRef = useRef<TextInput>(null);
@@ -20,6 +23,10 @@ export const Input: FC = () => {
   const [value, setValue] = useState<string>('');
 
   const saveList = (item: string) => {
+    if (list === null) {
+      const title = useTitle();
+      dispatch(listActions.setTitle(title));
+    }
     dispatch(listActions.setData(item));
     dispatch(listActions.setTrigger());
   };
@@ -27,19 +34,12 @@ export const Input: FC = () => {
   return (
     <View style={styles.wrapper}>
       <TextInput
+        style={styles.textInput}
         ref={inputRef}
         placeholder={'додати продукт...'}
         placeholderTextColor={'rgba(26,90,124,0.74)'}
         onChangeText={text => setValue(text)}
         value={value}
-        style={{
-          width: '100%',
-          height: '100%',
-          fontSize: 20,
-          paddingLeft: 15,
-          color: 'rgba(26,90,124,0.99)',
-          fontWeight: 'bold',
-        }}
         onSubmitEditing={() => {
           saveList(value);
           inputRef.current?.clear();
@@ -72,6 +72,14 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  textInput: {
+    width: '100%',
+    height: '100%',
+    fontSize: 20,
+    paddingLeft: 15,
+    color: 'rgba(26,90,124,0.99)',
+    fontWeight: 'bold',
   },
   clear: {
     width: 'auto',

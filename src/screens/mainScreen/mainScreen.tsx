@@ -1,6 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { FC, useEffect, useState } from 'react';
 import {
+  Alert,
   ImageBackground,
   StyleSheet,
   Text,
@@ -10,34 +10,36 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 
 import { Input, List, VoiceInput } from '../../components';
-import { useAppDispatch } from "../../hooks";
-import { listActions } from "../../redux";
-import { useAppSelector } from "../../hooks/useAppSelector.ts";
-import { useTitle } from "../../hooks/useTitle.ts";
+import { useAppDispatch } from '../../hooks';
+import { useAppSelector } from '../../hooks/useAppSelector.ts';
+import { listActions } from '../../redux';
 
 export const MainScreen: FC = () => {
+  const { title, trigger } = useAppSelector(state => state.list);
   const dispatch = useAppDispatch();
-  // const { trigger } = useAppSelector(state => state.list);
-  // const [trigger, setTrigger] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>('');
-  const [isClean, setIsClean] = useState<boolean>(false);
 
-  const getTitle = () => {
+  const [listTitle, setListTitle] = useState<string>(null);
 
-    const date = useTitle();
-    if (date !== null) {
-      setTitle(`Список: ${date}`);
-      return;
-    }
-  };
   useEffect(() => {
-    getTitle();
-  }, []);
+    setListTitle(title);
+  }, [trigger]);
 
   const remove = async () => {
-    dispatch(listActions.clearTitle());
-    dispatch(listActions.clearData());
-    dispatch(listActions.setTrigger());
+    Alert.alert('Попередження!', 'Видалити список?', [
+      {
+        text: 'так',
+        onPress: () => {
+          dispatch(listActions.clearTitle());
+          setListTitle('');
+          dispatch(listActions.clearData());
+          dispatch(listActions.setTrigger());
+        },
+      },
+      {
+        text: 'ні',
+        style: 'cancel',
+      },
+    ]);
   };
 
   return (
@@ -55,7 +57,9 @@ export const MainScreen: FC = () => {
               colors={['#4c9f89', '#537b91', '#213780']}
               style={[styles.linearGradient, styles.shadow]}
             >
-              <Text style={styles.headerTitle}>{title ? title : 'Список'}</Text>
+              <Text style={styles.headerTitle}>
+                {listTitle ? listTitle : 'Список'}
+              </Text>
               <TouchableOpacity style={styles.clear} onPress={remove}>
                 <Text
                   style={{
@@ -66,13 +70,12 @@ export const MainScreen: FC = () => {
                     textAlign: 'center',
                   }}
                 >
-                  {!title ? 'видалити' : ''}
+                  {listTitle ? 'видалити' : ''}
                 </Text>
               </TouchableOpacity>
             </LinearGradient>
           </View>
 
-          {/*<Example trigger={trigger} setTrigger={setTrigger} isClean={isClean}/>*/}
           <List />
           <View style={styles.inputWrapper}>
             <View style={styles.inputField}>

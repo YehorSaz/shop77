@@ -1,30 +1,43 @@
-import React, {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
-import {LogBox, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
+import React, { FC, useEffect, useState } from 'react';
+import { LogBox, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import Voice, {SpeechResultsEvent} from '@react-native-voice/voice';
-import {storeData} from '../../helpers/storeData.ts';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faMicrophone} from '@fortawesome/free-solid-svg-icons';
+import { useAppDispatch } from '../../hooks';
+import { useAppSelector } from '../../hooks/useAppSelector.ts';
+import { useTitle } from '../../hooks/useTitle.ts';
+import { listActions } from '../../redux';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']);
 
-// interface IProps {
-//   trigger: boolean;
-//   setTrigger: Dispatch<SetStateAction<boolean>>;
-// }
 export const VoiceInput: FC = () => {
+  const { list } = useAppSelector(state => state.list);
+  const dispatch = useAppDispatch();
+
   const [results, setResults] = useState<string | undefined>('');
   const [isListening, setIsListening] = useState<boolean>(false);
-  // useEffect(() => {
-  //   if (results) {
-  //     storeData(results, trigger, setTrigger);
-  //   }
-  // }, [results]);
+
+  useEffect(() => {
+    if (results) {
+      if (list === null) {
+        const title = useTitle();
+        dispatch(listActions.setTitle(title));
+      }
+      dispatch(listActions.setData(results));
+      dispatch(listActions.setTrigger());
+    }
+  }, [results]);
+
+  const capitalizeString = (string: string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   Voice.onSpeechResults = (e: SpeechResultsEvent) => {
     setIsListening(false);
     if (e.value !== undefined) {
-      setResults(e.value[0]);
+      const res = capitalizeString(e.value[0]);
+      setResults(res);
     } else {
       console.log('NOT HEAR ');
     }
@@ -44,7 +57,7 @@ export const VoiceInput: FC = () => {
   const _timeOut = () => {
     setTimeout(() => {
       setIsListening(false);
-    }, 5000);
+    }, 7000);
   };
   const _clearState = () => {
     setResults('');

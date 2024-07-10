@@ -1,2 +1,2 @@
 export * from './mainScreen';
-export * from './index.ts';
+export * from './recentScreen';

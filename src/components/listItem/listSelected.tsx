@@ -10,23 +10,26 @@ interface IProps {
   item: string;
 }
 
-export const ListItem: FC<IProps> = ({ item }) => {
+export const ListSelected: FC<IProps> = ({ item }) => {
   const dispatch = useAppDispatch();
   const itemRef = useRef<Text>(null);
   const deleteItem = (itemForDel: string) => {
-    dispatch(listActions.delItemFromList(itemForDel));
+    dispatch(listActions.delFromSelected(itemForDel));
     dispatch(listActions.setTrigger());
   };
 
-  const mark = (item: string) => {
-    dispatch(listActions.delItemFromList(item));
-    dispatch(listActions.setSelected(item));
+  const unMark = (item: string) => {
+    dispatch(listActions.backToList(item));
     dispatch(listActions.setTrigger());
   };
 
   return (
     <View style={styles.wrapper}>
-      <Text ref={itemRef} onPress={() => mark(item)} style={styles.text}>
+      <Text
+        ref={itemRef}
+        style={[styles.text, styles.lineThrow]}
+        onPress={() => unMark(item)}
+      >
         - {item}
       </Text>
       <TouchableOpacity
