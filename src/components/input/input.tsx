@@ -23,12 +23,15 @@ export const Input: FC = () => {
   const [value, setValue] = useState<string>('');
 
   const saveList = (item: string) => {
-    if (list === null) {
-      const title = useTitle();
-      dispatch(listActions.setTitle(title));
+    if (item) {
+      if (list === null) {
+        const title = useTitle();
+        dispatch(listActions.setTitle(title));
+      }
+      dispatch(listActions.setData(item));
+      dispatch(listActions.setTrigger());
     }
-    dispatch(listActions.setData(item));
-    dispatch(listActions.setTrigger());
+    return;
   };
 
   return (

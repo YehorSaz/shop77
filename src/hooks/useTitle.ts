@@ -3,5 +3,5 @@ import 'moment/locale/uk';
 import moment from 'moment';
 
 export function useTitle(): string {
-  return moment().format('LLL').replace(' р.,', '');
+  return moment().format('LLL:s').replace('р.,', '');
 }

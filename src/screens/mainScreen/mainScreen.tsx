@@ -1,3 +1,6 @@
+import { faClipboardList, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useNavigation } from '@react-navigation/native';
 import React, { FC, useEffect, useState } from 'react';
 import {
   Alert,
@@ -15,20 +18,23 @@ import { useAppSelector } from '../../hooks/useAppSelector.ts';
 import { listActions } from '../../redux';
 
 export const MainScreen: FC = () => {
+  const { navigate } = useNavigation<any>();
   const { title, trigger } = useAppSelector(state => state.list);
   const dispatch = useAppDispatch();
 
   const [listTitle, setListTitle] = useState<string>(null);
 
   useEffect(() => {
-    setListTitle(title);
+    const date = title.slice(0, -3);
+    setListTitle(date);
   }, [trigger]);
 
-  const remove = async () => {
+  const remove = () => {
     Alert.alert('Попередження!', 'Видалити список?', [
       {
         text: 'так',
         onPress: () => {
+          dispatch(listActions.saveToRecentLists());
           dispatch(listActions.clearTitle());
           setListTitle('');
           dispatch(listActions.clearData());
@@ -37,7 +43,6 @@ export const MainScreen: FC = () => {
       },
       {
         text: 'ні',
-        style: 'cancel',
       },
     ]);
   };
@@ -60,19 +65,29 @@ export const MainScreen: FC = () => {
               <Text style={styles.headerTitle}>
                 {listTitle ? listTitle : 'Список'}
               </Text>
-              <TouchableOpacity style={styles.clear} onPress={remove}>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    color: 'red',
-                    fontWeight: 'bold',
-                    opacity: 0.6,
-                    textAlign: 'center',
-                  }}
-                >
-                  {listTitle ? 'видалити' : ''}
-                </Text>
-              </TouchableOpacity>
+              {listTitle ? (
+                <TouchableOpacity style={styles.clear} onPress={remove}>
+                  <FontAwesomeIcon
+                    size={22}
+                    icon={faTrashCan}
+                    color={'rgba(128,51,51,0.75)'}
+                  />
+                </TouchableOpacity>
+              ) : null}
+              <Text
+                onPress={() => navigate('recent')}
+                style={{
+                  textAlignVertical: 'center',
+                  textAlign: 'center',
+                  paddingRight: 10,
+                }}
+              >
+                <FontAwesomeIcon
+                  size={32}
+                  icon={faClipboardList}
+                  color={'rgba(136,215,243,0.86)'}
+                />
+              </Text>
             </LinearGradient>
           </View>
 
@@ -114,9 +129,9 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     height: '100%',
-    width: '70%',
+    width: '50%',
     color: 'white',
-    textAlign: 'center',
+    textAlign: 'left',
     textAlignVertical: 'center',
     fontSize: 20,
     fontWeight: '600',
@@ -126,11 +141,11 @@ const styles = StyleSheet.create({
   },
   linearGradient: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     flexDirection: 'row',
+    paddingHorizontal: 10,
   },
   inputWrapper: {
-    // flex: 1,
     width: '100%',
     height: '7%',
     minHeight: 50,
@@ -144,13 +159,13 @@ const styles = StyleSheet.create({
     width: '44%',
     height: '100%',
     justifyContent: 'center',
-    marginRight: '2%',
+    marginRight: '5%',
   },
   micButton: {
     width: '44%',
     height: '100%',
     justifyContent: 'center',
-    marginLeft: '2%',
+    marginLeft: '5%',
   },
   hide: {
     display: 'none',

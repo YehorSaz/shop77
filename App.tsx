@@ -5,8 +5,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { persistor, store } from './src/redux';
-import { MainScreen } from './src/screens';
-import { RecentScreen } from './src/screens/recentScreen';
+import { MainScreen, RecentScreen } from './src/screens';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,14 +15,14 @@ const App: FC = () => {
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName={'Main'}
+            initialRouteName={'main'}
             screenOptions={{
               headerShown: false,
             }}
           >
-            <Stack.Screen name="Main" component={MainScreen} />
+            <Stack.Screen name="main" component={MainScreen} />
             <Stack.Screen
-              name="Recent"
+              name="recent"
               component={RecentScreen}
               options={{ title: 'Архів' }}
             />

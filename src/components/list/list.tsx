@@ -11,10 +11,12 @@ export const List: FC = () => {
   return (
     <ScrollView style={{ width: '100%', paddingHorizontal: 10 }}>
       <View style={styles.wrapper}>
-        {list?.map((item, uuid) => <ListItem item={item} key={uuid} />)}
+        {list?.map((item, index) => <ListItem item={item} key={index} />)}
       </View>
       <View style={styles.wrapper}>
-        {selected?.map((item, uuid) => <ListSelected item={item} key={uuid} />)}
+        {selected?.map((item, index) => (
+          <ListSelected item={item} key={index} />
+        ))}
       </View>
     </ScrollView>
   );

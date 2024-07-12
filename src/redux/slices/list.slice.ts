@@ -1,10 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import { IRecent } from '../../interfaces/recent.interface.ts';
+
 interface IState {
   list: string[] | null;
   trigger: boolean;
   title: string;
   selected: string[] | null;
+  recentList: IRecent[];
 }
 
 const initialState: IState = {
@@ -12,6 +15,7 @@ const initialState: IState = {
   trigger: false,
   title: '',
   selected: null,
+  recentList: [],
 };
 
 const listSlice = createSlice({
@@ -57,6 +61,30 @@ const listSlice = createSlice({
       const index = state.selected.indexOf(action.payload);
       const item = state.selected.splice(index, 1);
       state.list.push(...item);
+    },
+    saveToRecentLists: state => {
+      const recent = [] as string[];
+      if (state.list) {
+        recent.push(...state.list);
+      }
+      if (state.selected) {
+        recent.push(...state.selected);
+      }
+      const dataToSave: IRecent = {
+        title: state.title,
+        data: recent,
+      };
+
+      if (state.recentList) {
+        state.recentList.push(dataToSave);
+      } else {
+        state.recentList = new Array(dataToSave);
+      }
+    },
+    removeRecentItem: (state, action) => {
+      state.recentList = state.recentList.filter(
+        item => item.title !== action.payload,
+      );
     },
   },
 });
