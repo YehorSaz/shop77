@@ -23,13 +23,12 @@ export const MainScreen: FC = () => {
     state => state.list,
   );
 
-  console.log(isInputWrapperVisible);
   const dispatch = useAppDispatch();
 
   const [listTitle, setListTitle] = useState<string>(null);
 
   useEffect(() => {
-    dispatch(listActions.isInputVisible(true))
+    dispatch(listActions.isInputVisible(true));
   }, []);
 
   useEffect(() => {
