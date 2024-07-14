@@ -45,13 +45,13 @@ export const RecentList: FC<IProps> = ({ data }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.items}>
-        {data.data.map((item, index) => (
+        {data.data.map((item) => (
           <View
             style={{
               borderBottomWidth: 0.3,
               borderBottomColor: 'rgba(53,98,140,0.35)',
             }}
-            key={index}
+            key={item.id}
           >
             <Text style={{ fontSize: 18, color: '#35628c' }}>{item.item}</Text>
             {item.comment && (

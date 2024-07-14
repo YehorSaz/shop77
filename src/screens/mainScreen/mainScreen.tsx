@@ -22,9 +22,15 @@ export const MainScreen: FC = () => {
   const { title, trigger, isInputWrapperVisible } = useAppSelector(
     state => state.list,
   );
+
+  console.log(isInputWrapperVisible);
   const dispatch = useAppDispatch();
 
   const [listTitle, setListTitle] = useState<string>(null);
+
+  useEffect(() => {
+    dispatch(listActions.isInputVisible(true))
+  }, []);
 
   useEffect(() => {
     const date = title.slice(0, -3);
