@@ -1,42 +1,56 @@
-import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import React, { FC, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useAppDispatch } from '../../hooks';
+import { IPurchase } from '../../interfaces';
 import { listActions } from '../../redux';
 
 interface IProps {
-  item: string;
+  purchase: IPurchase;
 }
 
-export const ListSelected: FC<IProps> = ({ item }) => {
+export const ListSelected: FC<IProps> = ({ purchase }) => {
   const dispatch = useAppDispatch();
   const itemRef = useRef<Text>(null);
-  const deleteItem = (itemForDel: string) => {
-    dispatch(listActions.delFromSelected(itemForDel));
+
+  const deleteItem = () => {
+    dispatch(listActions.delFromSelected(purchase));
     dispatch(listActions.setTrigger());
   };
 
-  const unMark = (item: string) => {
-    dispatch(listActions.backToList(item));
+  const unMark = () => {
+    dispatch(listActions.backToList(purchase));
     dispatch(listActions.setTrigger());
   };
 
   return (
     <View style={styles.wrapper}>
-      <Text
-        ref={itemRef}
-        style={[styles.text, styles.lineThrow]}
-        onPress={() => unMark(item)}
-      >
-        - {item}
-      </Text>
+      <View style={{ width: '80%' }}>
+        <Text
+          ref={itemRef}
+          style={[styles.text, styles.opacity]}
+          onPress={unMark}
+        >
+          <View style={styles.check}>
+            <FontAwesomeIcon
+              size={22}
+              icon={faCheck}
+              color={'rgba(19,68,89,0.75)'}
+            />
+          </View>
+          {purchase.item}
+        </Text>
+        {purchase.comment && (
+          <Text style={{ color: '#35628c', fontSize: 16, fontStyle: 'italic' }}>
+            {purchase.comment}
+          </Text>
+        )}
+      </View>
       <TouchableOpacity
         style={{ width: '20%', alignItems: 'center' }}
-        onPress={() => {
-          deleteItem(item);
-        }}
+        onPress={deleteItem}
       >
         <FontAwesomeIcon
           size={22}
@@ -56,10 +70,11 @@ const styles = StyleSheet.create({
     width: '100%',
     elevation: 16,
     shadowColor: '#1c1a1a',
-    backgroundColor: 'rgba(136,215,243,0.86)',
+    backgroundColor: 'rgba(91,185,241,0.86)',
     marginVertical: 2,
     paddingHorizontal: 20,
     borderRadius: 5,
+    opacity: 0.8,
   },
   text: {
     width: '80%',
@@ -67,8 +82,11 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: '#28475e',
   },
-  lineThrow: {
-    textDecorationLine: 'line-through',
-    opacity: 0.3,
+  opacity: {
+    opacity: 0.7,
+  },
+  check: {
+    right: 5,
+    marginRight: 5,
   },
 });

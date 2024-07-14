@@ -1,24 +1,27 @@
+import { faCommentDots } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import React, { FC } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useAppDispatch } from '../../hooks';
+import { IRecent } from '../../interfaces';
 import { listActions } from '../../redux';
 
 interface IProps {
-  title: string;
-  data: string[];
+  data: IRecent;
 }
 
-export const RecentList: FC<IProps> = ({ data, title }) => {
+export const RecentList: FC<IProps> = ({ data }) => {
   const dispatch = useAppDispatch();
+
   const removeItem = (item: string) => {
     Alert.alert('Видалити список?', '', [
       {
-        text: 'так',
-        onPress: () => dispatch(listActions.removeRecentItem(item)),
+        text: 'ні',
       },
       {
-        text: 'ні',
+        text: 'так',
+        onPress: () => dispatch(listActions.removeRecentItem(item)),
       },
     ]);
   };
@@ -26,10 +29,10 @@ export const RecentList: FC<IProps> = ({ data, title }) => {
   return (
     <View style={styles.wrapper}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{data.title}</Text>
         <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
           <Text
-            onPress={() => removeItem(title)}
+            onPress={() => removeItem(data.title)}
             style={{
               textAlignVertical: 'bottom',
               fontStyle: 'italic',
@@ -42,10 +45,35 @@ export const RecentList: FC<IProps> = ({ data, title }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.items}>
-        {data.map((item, index) => (
-          <Text style={{ fontSize: 18, color: '#35628c' }} key={index}>
-            - {item}
-          </Text>
+        {data.data.map((item, index) => (
+          <View
+            style={{
+              borderBottomWidth: 0.3,
+              borderBottomColor: 'rgba(53,98,140,0.35)',
+            }}
+            key={index}
+          >
+            <Text style={{ fontSize: 18, color: '#35628c' }}>{item.item}</Text>
+            {item.comment && (
+              <View style={{ flexDirection: 'row' }}>
+                <FontAwesomeIcon
+                  size={12}
+                  icon={faCommentDots}
+                  color={'rgba(128,51,51,0.75)'}
+                />
+                <Text
+                  style={{
+                    left: 5,
+                    fontStyle: 'italic',
+                    color: '#35628c',
+                    fontSize: 16,
+                  }}
+                >
+                  {item.comment}
+                </Text>
+              </View>
+            )}
+          </View>
         ))}
       </View>
     </View>

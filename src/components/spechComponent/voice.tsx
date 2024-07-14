@@ -4,6 +4,8 @@ import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
 import React, { FC, useEffect, useState } from 'react';
 import { LogBox, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { capitalizeString } from '../../helpers';
+import { addId } from '../../helpers/addId.ts';
 import { useAppDispatch } from '../../hooks';
 import { useAppSelector } from '../../hooks/useAppSelector.ts';
 import { useTitle } from '../../hooks/useTitle.ts';
@@ -17,6 +19,7 @@ export const VoiceInput: FC = () => {
 
   const [results, setResults] = useState<string | undefined>('');
   const [isListening, setIsListening] = useState<boolean>(false);
+  const [isMulti, setIsMulti] = useState<boolean>(false);
 
   useEffect(() => {
     if (results) {
@@ -24,20 +27,25 @@ export const VoiceInput: FC = () => {
         const title = useTitle();
         dispatch(listActions.setTitle(title));
       }
-      dispatch(listActions.setData(results));
-      dispatch(listActions.setTrigger());
+      if (!isMulti) {
+        const res = addId(capitalizeString(results));
+        dispatch(listActions.setData(res));
+        dispatch(listActions.setTrigger());
+        setResults('');
+      } else if (isMulti) {
+        const resArr = results.split(' ');
+        dispatch(listActions.addMultiLine(resArr));
+        dispatch(listActions.setTrigger());
+        setIsMulti(false);
+        setResults('');
+      }
     }
   }, [results]);
-
-  const capitalizeString = (string: string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
 
   Voice.onSpeechResults = (e: SpeechResultsEvent) => {
     setIsListening(false);
     if (e.value !== undefined) {
-      const res = capitalizeString(e.value[0]);
-      setResults(res);
+      setResults(e.value[0]);
     } else {
       console.log('NOT HEAR ');
     }
@@ -68,9 +76,29 @@ export const VoiceInput: FC = () => {
       <View style={isListening ? styles.alert : styles.displayNone}>
         <Text style={styles.alertText}>Слухаю...</Text>
       </View>
-      <TouchableOpacity onPress={_startRecognizing}>
-        <FontAwesomeIcon icon={faMicrophone} size={40} style={styles.mic} />
-      </TouchableOpacity>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          width: '100%',
+          paddingRight: 50,
+        }}
+      >
+        <TouchableOpacity onPress={_startRecognizing}>
+          <FontAwesomeIcon icon={faMicrophone} size={40} style={styles.mic} />
+        </TouchableOpacity>
+        <View style={{ justifyContent: 'space-between', height: '100%' }}>
+          <TouchableOpacity
+            onPress={() => {
+              setIsMulti(true);
+              _startRecognizing();
+            }}
+          >
+            <FontAwesomeIcon icon={faMicrophone} size={30} style={styles.mic} />
+          </TouchableOpacity>
+          <Text style={{ color: '#35628c' }}>multi</Text>
+        </View>
+      </View>
     </View>
   );
 };

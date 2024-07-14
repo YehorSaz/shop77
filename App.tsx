@@ -6,6 +6,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import { persistor, store } from './src/redux';
 import { MainScreen, RecentScreen } from './src/screens';
+import { AIscreen } from './src/screens/AIscreen/AIscreen.tsx';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,11 @@ const App: FC = () => {
               name="recent"
               component={RecentScreen}
               options={{ title: 'Архів' }}
+            />
+            <Stack.Screen
+              name="ai"
+              component={AIscreen}
+              options={{ title: 'AI' }}
             />
           </Stack.Navigator>
         </NavigationContainer>

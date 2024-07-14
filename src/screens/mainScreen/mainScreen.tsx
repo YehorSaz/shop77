@@ -19,7 +19,9 @@ import { listActions } from '../../redux';
 
 export const MainScreen: FC = () => {
   const { navigate } = useNavigation<any>();
-  const { title, trigger } = useAppSelector(state => state.list);
+  const { title, trigger, isInputWrapperVisible } = useAppSelector(
+    state => state.list,
+  );
   const dispatch = useAppDispatch();
 
   const [listTitle, setListTitle] = useState<string>(null);
@@ -32,6 +34,9 @@ export const MainScreen: FC = () => {
   const remove = () => {
     Alert.alert('Попередження!', 'Видалити список?', [
       {
+        text: 'ні',
+      },
+      {
         text: 'так',
         onPress: () => {
           dispatch(listActions.saveToRecentLists());
@@ -40,9 +45,6 @@ export const MainScreen: FC = () => {
           dispatch(listActions.clearData());
           dispatch(listActions.setTrigger());
         },
-      },
-      {
-        text: 'ні',
       },
     ]);
   };
@@ -92,7 +94,11 @@ export const MainScreen: FC = () => {
           </View>
 
           <List />
-          <View style={styles.inputWrapper}>
+          <View
+            style={
+              isInputWrapperVisible ? styles.inputWrapper : { display: 'none' }
+            }
+          >
             <View style={styles.inputField}>
               <Input />
             </View>

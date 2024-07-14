@@ -9,14 +9,12 @@ export const List: FC = () => {
   const { list, selected } = useAppSelector(state => state.list);
 
   return (
-    <ScrollView style={{ width: '100%', paddingHorizontal: 10 }}>
-      <View style={styles.wrapper}>
-        {list?.map((item, index) => <ListItem item={item} key={index} />)}
+    <ScrollView style={styles.wrapper}>
+      <View>
+        {list?.map(item => <ListItem purchase={item} key={item.id} />)}
       </View>
-      <View style={styles.wrapper}>
-        {selected?.map((item, index) => (
-          <ListSelected item={item} key={index} />
-        ))}
+      <View style={styles.selected}>
+        {selected?.map(item => <ListSelected purchase={item} key={item.id} />)}
       </View>
     </ScrollView>
   );
@@ -26,5 +24,9 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     width: '100%',
+    paddingHorizontal: 10,
+  },
+  selected: {
+    marginTop: 10,
   },
 });

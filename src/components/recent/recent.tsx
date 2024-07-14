@@ -6,12 +6,11 @@ import { RecentList } from './recentList.tsx';
 
 export const Recent: FC = () => {
   const { recentList } = useAppSelector(state => state.list);
-
   return (
     <ScrollView>
       <View>
-        {recentList?.map((item, uuid) => (
-          <RecentList key={uuid} title={item.title} data={item.data} />
+        {recentList?.map((item, index) => (
+          <RecentList key={index} data={item} />
         ))}
       </View>
     </ScrollView>
