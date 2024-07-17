@@ -45,7 +45,7 @@ export const RecentList: FC<IProps> = ({ data }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.items}>
-        {data.data.map((item) => (
+        {data.data.map(item => (
           <View
             style={{
               borderBottomWidth: 0.3,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 5,
     shadowColor: '#1c1a1a',
-    elevation: 13,
+    elevation: 8,
     backgroundColor: '#FFFFFFFF',
   },
   titleContainer: {

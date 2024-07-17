@@ -1,10 +1,12 @@
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import React, { FC } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Recent } from '../../components/recent/recent.tsx';
+import { Recent } from "../../components";
 
-export const RecentScreen: FC = () => {
+export const RecentScreen: FC = ({ navigation }: any) => {
   const { navigate } = useNavigation<any>();
 
   return (
@@ -13,12 +15,21 @@ export const RecentScreen: FC = () => {
         <Text style={{ fontSize: 22, fontWeight: '600', color: '#35628c' }}>
           Архів
         </Text>
+        <Text
+          onPress={() => navigation.toggleDrawer()}
+          style={{
+            textAlignVertical: 'center',
+            textAlign: 'center',
+          }}
+        >
+          <FontAwesomeIcon size={32} icon={faBars} color={'#35628c'} />
+        </Text>
       </View>
       <Recent />
       <View style={styles.footer}>
         <Text
           style={{ fontSize: 22, fontWeight: '600', color: '#35628c' }}
-          onPress={() => navigate('main')}
+          onPress={() => navigate('Список')}
         >
           назад
         </Text>
@@ -33,10 +44,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   header: {
+    flexDirection: 'row',
     width: '100%',
     height: 70,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
     shadowColor: '#1c1a1a',
     elevation: 13,
     backgroundColor: '#FFFFFFFF',

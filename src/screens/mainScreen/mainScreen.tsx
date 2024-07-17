@@ -1,6 +1,5 @@
-import { faClipboardList, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useNavigation } from '@react-navigation/native';
 import React, { FC, useEffect, useState } from 'react';
 import {
   Alert,
@@ -17,8 +16,7 @@ import { useAppDispatch } from '../../hooks';
 import { useAppSelector } from '../../hooks/useAppSelector.ts';
 import { listActions } from '../../redux';
 
-export const MainScreen: FC = () => {
-  const { navigate } = useNavigation<any>();
+export const MainScreen: FC = ({ navigation }: any) => {
   const { title, trigger, isInputWrapperVisible } = useAppSelector(
     state => state.list,
   );
@@ -82,16 +80,15 @@ export const MainScreen: FC = () => {
                 </TouchableOpacity>
               ) : null}
               <Text
-                onPress={() => navigate('recent')}
+                onPress={() => navigation.toggleDrawer()}
                 style={{
                   textAlignVertical: 'center',
                   textAlign: 'center',
-                  paddingRight: 10,
                 }}
               >
                 <FontAwesomeIcon
                   size={32}
-                  icon={faClipboardList}
+                  icon={faBars}
                   color={'rgba(136,215,243,0.86)'}
                 />
               </Text>
@@ -144,7 +141,7 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'left',
     textAlignVertical: 'center',
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '600',
   },
   clear: {
@@ -154,7 +151,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     flexDirection: 'row',
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
   inputWrapper: {
     width: '100%',
