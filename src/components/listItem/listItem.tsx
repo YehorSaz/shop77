@@ -4,7 +4,7 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import {
   Keyboard,
   StyleSheet,
@@ -14,8 +14,8 @@ import {
   View,
 } from 'react-native';
 
-import { addId } from '../../helpers/addId.ts';
 import { useAppDispatch } from '../../hooks';
+import { useAppSelector } from '../../hooks/useAppSelector.ts';
 import { IPurchase } from '../../interfaces';
 import { listActions } from '../../redux';
 
@@ -24,16 +24,23 @@ interface IProps {
 }
 
 export const ListItem: FC<IProps> = ({ purchase }) => {
+  const { isDrawerVisible } = useAppSelector(state => state.list);
   const dispatch = useAppDispatch();
 
   const inputRef = useRef<TextInput>(null);
 
   const [isCommentVisible, setIsCommentVisible] = useState<boolean>(false);
-  // const [comment, setComment] = useState<string>(null);
-  const [text, setText] = useState<string>(null);
+  const [text, setText] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isDrawerVisible) {
+      setIsCommentVisible(false);
+    }
+  }, [isDrawerVisible]);
 
   const deleteItem = () => {
     dispatch(listActions.delItemFromList(purchase));
+    dispatch(listActions.isInputVisible(true));
     dispatch(listActions.setTrigger());
   };
 
@@ -68,6 +75,7 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
 
   const dellComment = () => {
     dispatch(listActions.dellComment(purchase));
+    dispatch(listActions.isInputVisible(true));
     dispatch(listActions.setTrigger());
   };
 
@@ -100,7 +108,7 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
           placeholder={'коментар...'}
           placeholderTextColor={'rgba(26,90,124,0.74)'}
           onChangeText={text => setText(text)}
-          value={text}
+          value={text || ''}
           blurOnSubmit={false}
           onSubmitEditing={() => {
             onSubmit();
@@ -108,18 +116,34 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
           }}
         />
       </View>
-      <TouchableOpacity
-        style={styles.commentBtn}
-        onPress={() => {
-          handlePress();
-        }}
-      >
-        <FontAwesomeIcon
-          size={22}
-          icon={faCommentDots}
-          color={'rgba(128,51,51,0.75)'}
-        />
-      </TouchableOpacity>
+      {isCommentVisible ? (
+        <TouchableOpacity
+          onPress={() => {
+            setIsCommentVisible(false);
+            dellComment();
+            Keyboard.dismiss();
+          }}
+        >
+          <FontAwesomeIcon
+            size={25}
+            icon={faXmark}
+            color={'rgba(128,51,51,0.75)'}
+          />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={styles.commentBtn}
+          onPress={() => {
+            handlePress();
+          }}
+        >
+          <FontAwesomeIcon
+            size={22}
+            icon={faCommentDots}
+            color={'rgba(128,51,51,0.75)'}
+          />
+        </TouchableOpacity>
+      )}
       <TouchableOpacity style={styles.delBtn} onPress={deleteItem}>
         <FontAwesomeIcon
           size={22}

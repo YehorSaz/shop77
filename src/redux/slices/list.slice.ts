@@ -11,6 +11,7 @@ interface IState {
   selected: IPurchase[] | null;
   recentList: IRecent[];
   isInputWrapperVisible: boolean;
+  isDrawerVisible: boolean;
 }
 
 const initialState: IState = {
@@ -20,6 +21,7 @@ const initialState: IState = {
   selected: null,
   recentList: [],
   isInputWrapperVisible: true,
+  isDrawerVisible: false,
 };
 
 const listSlice = createSlice({
@@ -125,6 +127,9 @@ const listSlice = createSlice({
     },
     isInputVisible: (state, action: { payload: boolean }) => {
       state.isInputWrapperVisible = action.payload;
+    },
+    isDrawerVisible: (state, action: { payload: boolean }) => {
+      state.isDrawerVisible = action.payload;
     },
   },
 });

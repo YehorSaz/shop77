@@ -4,6 +4,7 @@ import React, { FC, useEffect, useState } from 'react';
 import {
   Alert,
   ImageBackground,
+  Keyboard,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -46,10 +47,14 @@ export const MainScreen: FC = ({ navigation }: any) => {
           dispatch(listActions.clearTitle());
           setListTitle('');
           dispatch(listActions.clearData());
+          dispatch(listActions.isDrawerVisible(true));
           dispatch(listActions.setTrigger());
         },
       },
     ]);
+  };
+  const setDrawerVisibility = (isVisible: boolean) => {
+    dispatch(listActions.isDrawerVisible(isVisible));
   };
 
   return (
@@ -80,7 +85,11 @@ export const MainScreen: FC = ({ navigation }: any) => {
                 </TouchableOpacity>
               ) : null}
               <Text
-                onPress={() => navigation.toggleDrawer()}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  setDrawerVisibility(true);
+                  navigation.toggleDrawer();
+                }}
                 style={{
                   textAlignVertical: 'center',
                   textAlign: 'center',
