@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 
 import { addId } from '../../helpers/addId.ts';
@@ -14,36 +14,33 @@ export const Input: FC = () => {
   const [value, setValue] = useState<string>('');
 
   const inRef = useRef<TextInput>(null);
-  //
+
+  const handleKeyboardHide = useCallback(() => {
+    dispatch(listActions.setMicVisible(true));
+    inRef.current?.clear();
+    inRef.current?.blur();
+  }, [dispatch]);
 
   useEffect(() => {
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
-      () => {
-        dispatch(listActions.setMicVisible(true));
-        dispatch(listActions.setTrigger());
-        inRef.current.clear();
-        inRef.current.blur();
-      },
+      handleKeyboardHide,
     );
 
     return () => {
       keyboardDidHideListener.remove();
     };
+  }, [handleKeyboardHide]);
+
+  const handleFocus = useCallback(() => {
+    dispatch(listActions.setMicVisible(false));
   }, [dispatch]);
 
-  useEffect(() => {
-    if (inRef.current?.isFocused()) {
-      dispatch(listActions.setMicVisible(false));
-      dispatch(listActions.setTrigger());
-    }
-    return () => {
-      dispatch(listActions.setMicVisible(true));
-      dispatch(listActions.setTrigger());
-    };
-  }, [inRef.current?.isFocused()]);
+  const handleBlur = useCallback(() => {
+    dispatch(listActions.setMicVisible(true));
+  }, [dispatch]);
 
-  const saveList = () => {
+  const saveList = useCallback(() => {
     if (value) {
       if (list === null) {
         const title = useTitle();
@@ -51,10 +48,13 @@ export const Input: FC = () => {
       }
       const purchase = addId(value);
       dispatch(listActions.setData(purchase));
-      dispatch(listActions.setTrigger());
     }
-    return;
-  };
+  }, [value, list, dispatch]);
+
+  const handleSubmitEditing = useCallback(() => {
+    saveList();
+    setValue('');
+  }, [saveList]);
 
   return (
     <View style={styles.wrapper}>
@@ -63,13 +63,12 @@ export const Input: FC = () => {
         style={styles.textInput}
         placeholder={'додати продукт...'}
         placeholderTextColor={'rgba(26,90,124,0.74)'}
-        onChangeText={text => setValue(text)}
+        onChangeText={setValue}
         value={value}
         blurOnSubmit={false}
-        onSubmitEditing={() => {
-          saveList();
-          setValue('');
-        }}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onSubmitEditing={handleSubmitEditing}
       />
     </View>
   );

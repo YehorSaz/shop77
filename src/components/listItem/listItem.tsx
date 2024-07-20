@@ -4,7 +4,7 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Keyboard,
   StyleSheet,
@@ -31,27 +31,24 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
 
   const [isCommentVisible, setIsCommentVisible] = useState<boolean>(false);
   const [text, setText] = useState<string | null>(null);
-  // // const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
-  //
+
+  const handleKeyboardHide = useCallback(() => {
+    dispatch(listActions.isInputVisible(true));
+    dispatch(listActions.setMicVisible(true));
+    setText(null);
+    setIsCommentVisible(false);
+  }, [dispatch]);
+
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {},
-    );
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
-      () => {
-        dispatch(listActions.isInputVisible(true));
-        dispatch(listActions.setMicVisible(true));
-        dispatch(listActions.setTrigger());
-      },
+      handleKeyboardHide,
     );
 
     return () => {
       keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
     };
-  }, [dispatch]);
+  }, [handleKeyboardHide]);
 
   useEffect(() => {
     dispatch(listActions.isDrawerVisible(false));
@@ -61,13 +58,11 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
   const deleteItem = () => {
     dispatch(listActions.delItemFromList(purchase));
     dispatch(listActions.isInputVisible(true));
-    dispatch(listActions.setTrigger());
   };
 
   const mark = () => {
     dispatch(listActions.delItemFromList(purchase));
     dispatch(listActions.setSelected(purchase));
-    dispatch(listActions.setTrigger());
   };
 
   const handlePress = () => {
@@ -97,7 +92,6 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
     dispatch(listActions.dellComment(purchase));
     dispatch(listActions.isInputVisible(true));
     setText(null);
-    dispatch(listActions.setTrigger());
   };
 
   return (
@@ -141,7 +135,7 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
         <TouchableOpacity
           onPress={() => {
             setIsCommentVisible(false);
-            dellComment();
+            setText(null);
             Keyboard.dismiss();
           }}
         >
