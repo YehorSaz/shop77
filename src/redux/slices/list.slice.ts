@@ -12,6 +12,7 @@ interface IState {
   recentList: IRecent[];
   isInputWrapperVisible: boolean;
   isDrawerVisible: boolean;
+  isMicVisible: boolean;
 }
 
 const initialState: IState = {
@@ -22,6 +23,7 @@ const initialState: IState = {
   recentList: [],
   isInputWrapperVisible: true,
   isDrawerVisible: false,
+  isMicVisible: true,
 };
 
 const listSlice = createSlice({
@@ -73,7 +75,7 @@ const listSlice = createSlice({
       state.list.push(...item);
     },
     saveToRecentLists: state => {
-      if (state.list === null) {
+      if (state.list.length === 0) {
         return;
       } else {
         const recent = [] as IPurchase[];
@@ -130,6 +132,9 @@ const listSlice = createSlice({
     },
     isDrawerVisible: (state, action: { payload: boolean }) => {
       state.isDrawerVisible = action.payload;
+    },
+    setMicVisible: (state, action: { payload: boolean }) => {
+      state.isMicVisible = action.payload;
     },
   },
 });

@@ -31,11 +31,31 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
 
   const [isCommentVisible, setIsCommentVisible] = useState<boolean>(false);
   const [text, setText] = useState<string | null>(null);
+  // // const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
+  //
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {},
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        dispatch(listActions.isInputVisible(true));
+        dispatch(listActions.setMicVisible(true));
+        dispatch(listActions.setTrigger());
+      },
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, [dispatch]);
 
   useEffect(() => {
-    if (isDrawerVisible) {
-      setIsCommentVisible(false);
-    }
+    dispatch(listActions.isDrawerVisible(false));
+    dispatch(listActions.isInputVisible(true));
   }, [isDrawerVisible]);
 
   const deleteItem = () => {
@@ -76,6 +96,7 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
   const dellComment = () => {
     dispatch(listActions.dellComment(purchase));
     dispatch(listActions.isInputVisible(true));
+    setText(null);
     dispatch(listActions.setTrigger());
   };
 

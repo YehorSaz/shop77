@@ -18,9 +18,8 @@ import { useAppSelector } from '../../hooks/useAppSelector.ts';
 import { listActions } from '../../redux';
 
 export const MainScreen: FC = ({ navigation }: any) => {
-  const { title, trigger, isInputWrapperVisible } = useAppSelector(
-    state => state.list,
-  );
+  const { title, trigger, isInputWrapperVisible, isMicVisible } =
+    useAppSelector(state => state.list);
 
   const dispatch = useAppDispatch();
 
@@ -28,6 +27,7 @@ export const MainScreen: FC = ({ navigation }: any) => {
 
   useEffect(() => {
     dispatch(listActions.isInputVisible(true));
+    dispatch(listActions.setMicVisible(true));
   }, []);
 
   useEffect(() => {
@@ -110,11 +110,16 @@ export const MainScreen: FC = ({ navigation }: any) => {
               isInputWrapperVisible ? styles.inputWrapper : { display: 'none' }
             }
           >
-            <View style={styles.inputField}>
+            <View
+              style={[
+                styles.inputField,
+                !isMicVisible && { width: '100%', marginRight: 0 },
+              ]}
+            >
               <Input />
             </View>
 
-            <View style={styles.micButton}>
+            <View style={isMicVisible ? styles.micButton : styles.hide}>
               <VoiceInput />
             </View>
           </View>
@@ -167,7 +172,7 @@ const styles = StyleSheet.create({
     height: '7%',
     minHeight: 50,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     flexDirection: 'row',
     backgroundColor: 'rgba(174,207,246,0.79)',
     marginBottom: 10,
@@ -175,7 +180,7 @@ const styles = StyleSheet.create({
   inputField: {
     width: '44%',
     height: '100%',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     marginRight: '5%',
   },
   micButton: {

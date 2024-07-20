@@ -1,7 +1,7 @@
-import React, { FC, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
-import { addId } from '../../helpers/addId.ts';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 
+import { addId } from '../../helpers/addId.ts';
 import { useAppDispatch } from '../../hooks';
 import { useAppSelector } from '../../hooks/useAppSelector.ts';
 import { useTitle } from '../../hooks/useTitle.ts';
@@ -12,6 +12,36 @@ export const Input: FC = () => {
   const dispatch = useAppDispatch();
 
   const [value, setValue] = useState<string>('');
+
+  const inRef = useRef<TextInput>(null);
+  //
+
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        dispatch(listActions.setMicVisible(true));
+        dispatch(listActions.setTrigger());
+        inRef.current.clear();
+        inRef.current.blur();
+      },
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (inRef.current?.isFocused()) {
+      dispatch(listActions.setMicVisible(false));
+      dispatch(listActions.setTrigger());
+    }
+    return () => {
+      dispatch(listActions.setMicVisible(true));
+      dispatch(listActions.setTrigger());
+    };
+  }, [inRef.current?.isFocused()]);
 
   const saveList = () => {
     if (value) {
@@ -29,6 +59,7 @@ export const Input: FC = () => {
   return (
     <View style={styles.wrapper}>
       <TextInput
+        ref={inRef}
         style={styles.textInput}
         placeholder={'додати продукт...'}
         placeholderTextColor={'rgba(26,90,124,0.74)'}
@@ -58,14 +89,5 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     color: 'rgba(26,90,124,0.99)',
     fontWeight: 'bold',
-  },
-  clear: {
-    width: 'auto',
-  },
-  arrow: {
-    display: 'flex',
-  },
-  displayNone: {
-    display: 'none',
   },
 });
