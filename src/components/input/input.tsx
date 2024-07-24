@@ -24,9 +24,7 @@ import FastImage from 'react-native-fast-image';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 import { addId, capitalizeString } from '../../helpers';
-import { useAppDispatch } from '../../hooks';
-import { useAppSelector } from '../../hooks/useAppSelector.ts';
-import { useTitle } from '../../hooks/useTitle.ts';
+import { useAppDispatch, useAppSelector, useTitle } from '../../hooks';
 import { listActions } from '../../redux';
 import micGif from './assets/micro_128.gif';
 
@@ -48,7 +46,6 @@ export const Input: FC<IProps> = ({ setIsInputVisible }) => {
   const [results, setResults] = useState<string | undefined>('');
   const [isListening, setIsListening] = useState<boolean>(false);
   const [isMulti, setIsMulti] = useState<boolean>(false);
-
   const inRef = useRef<TextInput>(null);
 
   useEffect(() => {
@@ -79,7 +76,7 @@ export const Input: FC<IProps> = ({ setIsInputVisible }) => {
       dispatch(listActions.setTrigger());
       setResults('');
     }
-  }, [results, isMulti, list, dispatch]);
+  }, [results, isMulti, list]);
 
   useEffect(() => {
     Voice.onSpeechStart = onSpeechStart;
@@ -165,14 +162,15 @@ export const Input: FC<IProps> = ({ setIsInputVisible }) => {
       }
       const purchase = addId(value);
       dispatch(listActions.setData(purchase));
-      dispatch(listActions.setTrigger());
     }
-  }, [value, list, dispatch]);
+  }, [value, list]);
 
   const handleSubmitEditing = useCallback(() => {
     saveList();
     setValue('');
-    inRef.current?.focus();
+    setTimeout(() => {
+      inRef.current?.focus();
+    }, 50);
   }, [saveList]);
 
   const styles = createStyles(screenWidth, screenHeight);

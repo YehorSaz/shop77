@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { FC } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Recent } from '../../components';
+import { Recent } from '../../components/recent';
 
 export const RecentScreen: FC = ({ navigation }: any) => {
   const { navigate } = useNavigation<any>();

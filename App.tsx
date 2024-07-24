@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { persistor, store } from './src/redux';
-import { MainScreen, RecentScreen } from './src/screens';
+import { MainScreen, RecentScreen, SettingsScreen } from './src/screens';
 
 const Drawer = createDrawerNavigator();
 
@@ -29,6 +29,7 @@ const App: FC = () => {
               component={RecentScreen}
               options={{ title: 'Архів' }}
             />
+            <Drawer.Screen name="Налаштування" component={SettingsScreen} />
           </Drawer.Navigator>
         </NavigationContainer>
       </PersistGate>

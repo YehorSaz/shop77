@@ -13,12 +13,11 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 
 import { Input, List } from '../../components';
-import { useAppDispatch } from '../../hooks';
-import { useAppSelector } from '../../hooks/useAppSelector.ts';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { listActions } from '../../redux';
 
 export const MainScreen: FC = ({ navigation }: any) => {
-  const { title, trigger } = useAppSelector(state => state.list);
+  const { title, showNotification } = useAppSelector(state => state.list);
 
   const dispatch = useAppDispatch();
 
@@ -28,25 +27,32 @@ export const MainScreen: FC = ({ navigation }: any) => {
   useEffect(() => {
     const date = title.slice(0, -3);
     setListTitle(date);
-  }, [trigger]);
+  }, [title]);
 
   const remove = () => {
-    Alert.alert('Перемістити список в архів?', '', [
-      {
-        text: 'ні',
-      },
-      {
-        text: 'так',
-        onPress: () => {
-          dispatch(listActions.saveToRecentLists());
-          dispatch(listActions.clearTitle());
-          setListTitle('');
-          dispatch(listActions.clearData());
-          dispatch(listActions.isDrawerVisible(true));
-          dispatch(listActions.setTrigger());
+    if (!showNotification) {
+      dispatch(listActions.saveToRecentLists());
+      dispatch(listActions.clearTitle());
+      setListTitle('');
+      dispatch(listActions.clearData());
+      dispatch(listActions.isDrawerVisible(true));
+    } else {
+      Alert.alert('Перемістити список в архів?', '', [
+        {
+          text: 'ні',
         },
-      },
-    ]);
+        {
+          text: 'так',
+          onPress: () => {
+            dispatch(listActions.saveToRecentLists());
+            dispatch(listActions.clearTitle());
+            setListTitle('');
+            dispatch(listActions.clearData());
+            dispatch(listActions.isDrawerVisible(true));
+          },
+        },
+      ]);
+    }
   };
   const setDrawerVisibility = (isVisible: boolean) => {
     dispatch(listActions.isDrawerVisible(isVisible));
@@ -154,7 +160,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     width: '100%',
     height: '10%',
-    minHeight: 50,
+    minHeight: 70,
     alignItems: 'center',
     justifyContent: 'flex-start',
     flexDirection: 'row',

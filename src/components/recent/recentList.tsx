@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { FC } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { useAppDispatch } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { IRecent } from '../../interfaces';
 import { listActions } from '../../redux';
 
@@ -13,37 +13,49 @@ interface IProps {
 }
 
 export const RecentList: FC<IProps> = ({ data }) => {
+  const { showNotification } = useAppSelector(state => state.list);
+
   const dispatch = useAppDispatch();
 
   const { navigate } = useNavigation<any>();
 
   const removeItem = (item: string) => {
-    Alert.alert('Видалити список?', '', [
-      {
-        text: 'ні',
-      },
-      {
-        text: 'так',
-        onPress: () => dispatch(listActions.removeRecentItem(item)),
-      },
-    ]);
+    if (!showNotification) {
+      dispatch(listActions.removeRecentItem(item));
+    } else {
+      Alert.alert('Видалити список?', '', [
+        {
+          text: 'ні',
+        },
+        {
+          text: 'так',
+          onPress: () => dispatch(listActions.removeRecentItem(item)),
+        },
+      ]);
+    }
   };
 
   const restoreItem = (item: string) => {
     dispatch(listActions.saveToRecentLists());
-    Alert.alert('Відновити список?', '', [
-      {
-        text: 'ні',
-      },
-      {
-        text: 'так',
-        onPress: () => {
-          dispatch(listActions.restoreRecent(item));
-          dispatch(listActions.setTrigger());
-          navigate('Список');
+    if (!showNotification) {
+      dispatch(listActions.restoreRecent(item));
+      dispatch(listActions.setTrigger());
+      navigate('Список');
+    } else {
+      Alert.alert('Відновити список?', '', [
+        {
+          text: 'ні',
         },
-      },
-    ]);
+        {
+          text: 'так',
+          onPress: () => {
+            dispatch(listActions.restoreRecent(item));
+            dispatch(listActions.setTrigger());
+            navigate('Список');
+          },
+        },
+      ]);
+    }
   };
 
   return (

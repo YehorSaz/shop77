@@ -1,8 +1,7 @@
 import React, { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { useAppDispatch } from '../../hooks';
-import { useAppSelector } from '../../hooks/useAppSelector.ts';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { listActions } from '../../redux';
 import { ListItem } from '../listItem';
 import { ListSelected } from '../listItem/listSelected.tsx';
@@ -19,7 +18,6 @@ export const List: FC<IProps> = ({ setIsInputVisible }) => {
 
   useEffect(() => {
     dispatch(listActions.isDrawerVisible(false));
-    dispatch(listActions.isInputVisible(true));
   }, [isDrawerVisible]);
 
   return (

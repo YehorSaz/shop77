@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { addId, capitalizeString } from '../../helpers';
-import { useTitle } from '../../hooks/useTitle.ts';
+import { useTitle } from '../../hooks';
 import { IPurchase, IRecent } from '../../interfaces';
 
 interface IState {
@@ -12,6 +12,7 @@ interface IState {
   recentList: IRecent[];
   isInputWrapperVisible: boolean;
   isDrawerVisible: boolean;
+  showNotification: boolean;
 }
 
 const initialState: IState = {
@@ -22,6 +23,7 @@ const initialState: IState = {
   recentList: [],
   isInputWrapperVisible: true,
   isDrawerVisible: false,
+  showNotification: true,
 };
 
 const listSlice = createSlice({
@@ -138,6 +140,9 @@ const listSlice = createSlice({
       );
       state.list = [...state.recentList[index].data];
       state.title = date;
+    },
+    showNotification: (state, action: { payload: boolean }) => {
+      state.showNotification = action.payload;
     },
   },
 });

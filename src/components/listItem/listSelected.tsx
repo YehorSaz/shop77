@@ -1,9 +1,10 @@
 import { faCheck, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import React, { FC, useRef } from 'react';
+import React, { FC, useCallback, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { SlideInRight } from 'react-native-reanimated';
 
-import { useAppDispatch } from '../../hooks';
+import { useAppDispatch, useDeleteAnimation } from '../../hooks';
 import { IPurchase } from '../../interfaces';
 import { listActions } from '../../redux';
 
@@ -14,19 +15,27 @@ interface IProps {
 export const ListSelected: FC<IProps> = ({ purchase }) => {
   const dispatch = useAppDispatch();
   const itemRef = useRef<Text>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
-  const deleteItem = () => {
+  const deleteItem = useCallback(() => {
     dispatch(listActions.delFromSelected(purchase));
-    dispatch(listActions.setTrigger());
-  };
+  }, [dispatch, purchase]);
 
   const unMark = () => {
     dispatch(listActions.backToList(purchase));
-    dispatch(listActions.setTrigger());
   };
 
+  const handleDeletePress = () => {
+    setIsDeleting(true);
+  };
+
+  const animatedStyle = useDeleteAnimation(isDeleting, deleteItem);
+
   return (
-    <View style={styles.wrapper}>
+    <Animated.View
+      entering={SlideInRight.duration(200)}
+      style={[styles.wrapper, animatedStyle]}
+    >
       <View style={{ width: '80%' }}>
         <Text
           ref={itemRef}
@@ -50,7 +59,7 @@ export const ListSelected: FC<IProps> = ({ purchase }) => {
       </View>
       <TouchableOpacity
         style={{ width: '20%', alignItems: 'center' }}
-        onPress={deleteItem}
+        onPress={handleDeletePress}
       >
         <FontAwesomeIcon
           size={22}
@@ -58,7 +67,7 @@ export const ListSelected: FC<IProps> = ({ purchase }) => {
           color={'rgba(128,51,51,0.75)'}
         />
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 };
 

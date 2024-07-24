@@ -21,9 +21,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Animated, { SlideInLeft } from 'react-native-reanimated';
 
-import { useAppDispatch } from '../../hooks';
-import { useAppSelector } from '../../hooks/useAppSelector.ts';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useDeleteAnimation,
+} from '../../hooks';
 import { IPurchase } from '../../interfaces';
 import { listActions } from '../../redux';
 
@@ -40,16 +44,17 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
 
   const [isCommentVisible, setIsCommentVisible] = useState<boolean>(false);
   const [text, setText] = useState<string | null>(null);
-  const [keyboardDIdShow, setKeyboardDIdShow] = useState<boolean>(false);
+  const [keyboardDidShow, setKeyboardDidShow] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const handleKeyboardHide = useCallback(() => {
-    setKeyboardDIdShow(false);
+    setKeyboardDidShow(false);
     setText(null);
     setIsCommentVisible(false);
   }, []);
 
   const handleKeyboardShow = useCallback(() => {
-    setKeyboardDIdShow(true);
+    setKeyboardDidShow(true);
   }, []);
 
   useEffect(() => {
@@ -73,18 +78,17 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
     dispatch(listActions.isInputVisible(true));
   }, [isDrawerVisible]);
 
-  const deleteItem = () => {
+  const deleteItem = useCallback(() => {
     dispatch(listActions.delItemFromList(purchase));
-    dispatch(listActions.isInputVisible(true));
-  };
+  }, [purchase]);
 
-  const mark = () => {
+  const mark = useCallback(() => {
     dispatch(listActions.delItemFromList(purchase));
     dispatch(listActions.setSelected(purchase));
-  };
+  }, [purchase]);
 
-  const handlePress = () => {
-    if (keyboardDIdShow) {
+  const handlePress = useCallback(() => {
+    if (keyboardDidShow) {
       setIsCommentVisible(true);
       setTimeout(() => {
         if (inputRef.current) {
@@ -100,9 +104,9 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
         }
       }, 50);
     }
-  };
+  }, [keyboardDidShow, setIsInputVisible]);
 
-  const onSubmit = () => {
+  const onSubmit = useCallback(() => {
     dispatch(
       listActions.addComment({
         id: purchase.id,
@@ -112,16 +116,35 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
     );
     setText(null);
     setIsCommentVisible(false);
-  };
+  }, [purchase, text]);
 
-  const dellComment = () => {
+  const dellComment = useCallback(() => {
     dispatch(listActions.dellComment(purchase));
-    // dispatch(listActions.isInputVisible(true));
     setText(null);
-  };
+  }, [purchase]);
+
+  const handleDeletePress = useCallback(() => {
+    setIsDeleting(true);
+  }, []);
+
+  const animatedStyle = useDeleteAnimation(isDeleting, deleteItem);
+
+  const handleBlur = useCallback(() => {
+    setIsCommentVisible(false);
+    setTimeout(() => {
+      setText(null);
+    }, 300);
+  }, []);
+
+  const handleFocus = useCallback(() => {
+    setIsInputVisible(false);
+  }, [setIsInputVisible]);
 
   return (
-    <View style={styles.wrapper}>
+    <Animated.View
+      entering={SlideInLeft.duration(200)}
+      style={[styles.wrapper, animatedStyle]}
+    >
       <View style={styles.textWrapper}>
         <View style={{ width: '100%' }}>
           <Text onPress={mark} style={styles.text}>
@@ -148,13 +171,12 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
           verticalAlign={'top'}
           placeholder={'коментар...'}
           placeholderTextColor={'rgba(26,90,124,0.74)'}
-          onChangeText={text => setText(text)}
+          onChangeText={setText}
           value={text || ''}
           blurOnSubmit={false}
-          onSubmitEditing={() => {
-            onSubmit();
-            Keyboard.dismiss();
-          }}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          onSubmitEditing={onSubmit}
         />
       </View>
       {isCommentVisible ? (
@@ -162,7 +184,6 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
           onPress={() => {
             setIsCommentVisible(false);
             setText(null);
-            Keyboard.dismiss();
           }}
         >
           <FontAwesomeIcon
@@ -172,12 +193,7 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
           />
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity
-          style={styles.commentBtn}
-          onPress={() => {
-            handlePress();
-          }}
-        >
+        <TouchableOpacity style={styles.commentBtn} onPress={handlePress}>
           <FontAwesomeIcon
             size={22}
             icon={faCommentDots}
@@ -185,14 +201,14 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
           />
         </TouchableOpacity>
       )}
-      <TouchableOpacity style={styles.delBtn} onPress={deleteItem}>
+      <TouchableOpacity style={styles.delBtn} onPress={handleDeletePress}>
         <FontAwesomeIcon
           size={22}
           icon={faTrashCan}
           color={'rgba(128,51,51,0.75)'}
         />
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 };
 
