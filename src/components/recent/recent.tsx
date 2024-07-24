@@ -9,6 +9,7 @@ import { RecentList } from './recentList.tsx';
 export const Recent: FC = () => {
   const dispatch = useAppDispatch();
   const { recentList } = useAppSelector(state => state.list);
+  const reversedRecent = recentList ? [...recentList].reverse() : null;
 
   useEffect(() => {
     dispatch(listActions.isDrawerVisible(false));
@@ -17,7 +18,7 @@ export const Recent: FC = () => {
   return (
     <ScrollView keyboardShouldPersistTaps={'handled'}>
       <View>
-        {recentList?.map((item, index) => (
+        {reversedRecent?.map((item, index) => (
           <RecentList key={index} data={item} />
         ))}
       </View>

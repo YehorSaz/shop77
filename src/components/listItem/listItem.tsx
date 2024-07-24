@@ -4,7 +4,15 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   Keyboard,
   StyleSheet,
@@ -21,9 +29,10 @@ import { listActions } from '../../redux';
 
 interface IProps {
   purchase: IPurchase;
+  setIsInputVisible: Dispatch<SetStateAction<boolean>>;
 }
 
-export const ListItem: FC<IProps> = ({ purchase }) => {
+export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
   const { isDrawerVisible } = useAppSelector(state => state.list);
   const dispatch = useAppDispatch();
 
@@ -31,24 +40,33 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
 
   const [isCommentVisible, setIsCommentVisible] = useState<boolean>(false);
   const [text, setText] = useState<string | null>(null);
+  const [keyboardDIdShow, setKeyboardDIdShow] = useState<boolean>(false);
 
   const handleKeyboardHide = useCallback(() => {
-    dispatch(listActions.isInputVisible(true));
-    dispatch(listActions.setMicVisible(true));
+    setKeyboardDIdShow(false);
     setText(null);
     setIsCommentVisible(false);
-  }, [dispatch]);
+  }, []);
+
+  const handleKeyboardShow = useCallback(() => {
+    setKeyboardDIdShow(true);
+  }, []);
 
   useEffect(() => {
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       handleKeyboardHide,
     );
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      handleKeyboardShow,
+    );
 
     return () => {
       keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
     };
-  }, [handleKeyboardHide]);
+  }, [handleKeyboardHide, handleKeyboardShow]);
 
   useEffect(() => {
     dispatch(listActions.isDrawerVisible(false));
@@ -66,13 +84,22 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
   };
 
   const handlePress = () => {
-    dispatch(listActions.isInputVisible(false));
-    setIsCommentVisible(true);
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 100);
+    if (keyboardDIdShow) {
+      setIsCommentVisible(true);
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 50);
+    } else {
+      setIsInputVisible(false);
+      setIsCommentVisible(true);
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 50);
+    }
   };
 
   const onSubmit = () => {
@@ -85,12 +112,11 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
     );
     setText(null);
     setIsCommentVisible(false);
-    dispatch(listActions.isInputVisible(true));
   };
 
   const dellComment = () => {
     dispatch(listActions.dellComment(purchase));
-    dispatch(listActions.isInputVisible(true));
+    // dispatch(listActions.isInputVisible(true));
     setText(null);
   };
 

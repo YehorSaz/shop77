@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { capitalizeString } from '../../helpers';
-import { addId } from '../../helpers/addId.ts';
+import { addId, capitalizeString } from '../../helpers';
+import { useTitle } from '../../hooks/useTitle.ts';
 import { IPurchase, IRecent } from '../../interfaces';
 
 interface IState {
@@ -12,7 +12,6 @@ interface IState {
   recentList: IRecent[];
   isInputWrapperVisible: boolean;
   isDrawerVisible: boolean;
-  isMicVisible: boolean;
 }
 
 const initialState: IState = {
@@ -23,7 +22,6 @@ const initialState: IState = {
   recentList: [],
   isInputWrapperVisible: true,
   isDrawerVisible: false,
-  isMicVisible: true,
 };
 
 const listSlice = createSlice({
@@ -75,7 +73,7 @@ const listSlice = createSlice({
       state.list.push(...item);
     },
     saveToRecentLists: state => {
-      if (state.list.length === 0) {
+      if (state.list === null || state.list.length === 0) {
         return;
       } else {
         const recent = [] as IPurchase[];
@@ -133,8 +131,13 @@ const listSlice = createSlice({
     isDrawerVisible: (state, action: { payload: boolean }) => {
       state.isDrawerVisible = action.payload;
     },
-    setMicVisible: (state, action: { payload: boolean }) => {
-      state.isMicVisible = action.payload;
+    restoreRecent: (state, action: { payload: string }) => {
+      const date = useTitle();
+      const index = state.recentList.findIndex(
+        item => item.title === action.payload,
+      );
+      state.list = [...state.recentList[index].data];
+      state.title = date;
     },
   },
 });

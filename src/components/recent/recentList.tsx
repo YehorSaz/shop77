@@ -1,5 +1,6 @@
 import { faCommentDots } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useNavigation } from '@react-navigation/native';
 import React, { FC } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -14,6 +15,8 @@ interface IProps {
 export const RecentList: FC<IProps> = ({ data }) => {
   const dispatch = useAppDispatch();
 
+  const { navigate } = useNavigation<any>();
+
   const removeItem = (item: string) => {
     Alert.alert('Видалити список?', '', [
       {
@@ -22,6 +25,23 @@ export const RecentList: FC<IProps> = ({ data }) => {
       {
         text: 'так',
         onPress: () => dispatch(listActions.removeRecentItem(item)),
+      },
+    ]);
+  };
+
+  const restoreItem = (item: string) => {
+    dispatch(listActions.saveToRecentLists());
+    Alert.alert('Відновити список?', '', [
+      {
+        text: 'ні',
+      },
+      {
+        text: 'так',
+        onPress: () => {
+          dispatch(listActions.restoreRecent(item));
+          dispatch(listActions.setTrigger());
+          navigate('Список');
+        },
       },
     ]);
   };
@@ -75,6 +95,21 @@ export const RecentList: FC<IProps> = ({ data }) => {
             )}
           </View>
         ))}
+      </View>
+      <View style={{ paddingHorizontal: 20, height: 40 }}>
+        <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
+          <Text
+            onPress={() => restoreItem(data.title)}
+            style={{
+              textAlignVertical: 'bottom',
+              fontStyle: 'italic',
+              fontSize: 18,
+              color: '#429779',
+            }}
+          >
+            відновити
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

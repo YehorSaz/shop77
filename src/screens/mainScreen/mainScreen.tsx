@@ -12,23 +12,18 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-import { Input, List, VoiceInput } from '../../components';
+import { Input, List } from '../../components';
 import { useAppDispatch } from '../../hooks';
 import { useAppSelector } from '../../hooks/useAppSelector.ts';
 import { listActions } from '../../redux';
 
 export const MainScreen: FC = ({ navigation }: any) => {
-  const { title, trigger, isInputWrapperVisible, isMicVisible } =
-    useAppSelector(state => state.list);
+  const { title, trigger } = useAppSelector(state => state.list);
 
   const dispatch = useAppDispatch();
 
-  const [listTitle, setListTitle] = useState<string>(null);
-
-  useEffect(() => {
-    dispatch(listActions.isInputVisible(true));
-    dispatch(listActions.setMicVisible(true));
-  }, []);
+  const [listTitle, setListTitle] = useState<string>('');
+  const [isInputVisible, setIsInputVisible] = useState<boolean>(true);
 
   useEffect(() => {
     const date = title.slice(0, -3);
@@ -36,7 +31,7 @@ export const MainScreen: FC = ({ navigation }: any) => {
   }, [trigger]);
 
   const remove = () => {
-    Alert.alert('Попередження!', 'Видалити список?', [
+    Alert.alert('Перемістити список в архів?', '', [
       {
         text: 'ні',
       },
@@ -104,23 +99,12 @@ export const MainScreen: FC = ({ navigation }: any) => {
             </LinearGradient>
           </View>
 
-          <List />
+          <List setIsInputVisible={setIsInputVisible} />
           <View
-            style={
-              isInputWrapperVisible ? styles.inputWrapper : { display: 'none' }
-            }
+            style={isInputVisible ? styles.inputWrapper : { display: 'none' }}
           >
-            <View
-              style={[
-                styles.inputField,
-                !isMicVisible && { width: '100%', marginRight: 0 },
-              ]}
-            >
-              <Input />
-            </View>
-
-            <View style={isMicVisible ? styles.micButton : styles.hide}>
-              <VoiceInput />
+            <View style={styles.inputField}>
+              <Input setIsInputVisible={setIsInputVisible} />
             </View>
           </View>
         </View>
@@ -169,25 +153,25 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     width: '100%',
-    height: '7%',
+    height: '10%',
     minHeight: 50,
     alignItems: 'center',
     justifyContent: 'flex-start',
     flexDirection: 'row',
-    backgroundColor: 'rgba(174,207,246,0.79)',
-    marginBottom: 10,
+    backgroundColor: 'rgb(174,224,246)',
+    // marginBottom: 10,
   },
   inputField: {
-    width: '44%',
+    width: '42.5%',
     height: '100%',
     justifyContent: 'flex-start',
-    marginRight: '5%',
+    // marginRight: '5%',
   },
   micButton: {
-    width: '44%',
+    width: '50%',
     height: '100%',
     justifyContent: 'center',
-    marginLeft: '5%',
+    // marginLeft: '5%',
   },
   hide: {
     display: 'none',

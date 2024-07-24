@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { useAppDispatch } from '../../hooks';
@@ -7,7 +7,11 @@ import { listActions } from '../../redux';
 import { ListItem } from '../listItem';
 import { ListSelected } from '../listItem/listSelected.tsx';
 
-export const List: FC = () => {
+interface IProps {
+  setIsInputVisible: Dispatch<SetStateAction<boolean>>;
+}
+
+export const List: FC<IProps> = ({ setIsInputVisible }) => {
   const dispatch = useAppDispatch();
   const { list, selected, isDrawerVisible } = useAppSelector(
     state => state.list,
@@ -21,7 +25,13 @@ export const List: FC = () => {
   return (
     <ScrollView style={styles.wrapper} keyboardShouldPersistTaps={'handled'}>
       <View>
-        {list?.map(item => <ListItem purchase={item} key={item.id} />)}
+        {list?.map(item => (
+          <ListItem
+            purchase={item}
+            key={item.id}
+            setIsInputVisible={setIsInputVisible}
+          />
+        ))}
       </View>
       <View style={styles.selected}>
         {selected?.map(item => <ListSelected purchase={item} key={item.id} />)}
