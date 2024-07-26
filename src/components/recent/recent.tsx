@@ -1,8 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 
-import { useAppDispatch } from '../../hooks';
-import { useAppSelector } from '../../hooks/useAppSelector.ts';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { listActions } from '../../redux';
 import { RecentList } from './recentList.tsx';
 

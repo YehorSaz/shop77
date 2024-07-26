@@ -7,7 +7,7 @@ import {
 } from 'react-native-reanimated';
 
 export const useDeleteAnimation = (
-  isDeleting: boolean,
+  isPress: boolean,
   deleteItem: () => void,
 ) => {
   const translateX = useSharedValue(0);
@@ -16,17 +16,17 @@ export const useDeleteAnimation = (
     return {
       transform: [{ translateX: translateX.value }],
     };
-  }, [isDeleting]);
+  }, [isPress]);
 
   useEffect(() => {
-    if (isDeleting) {
-      translateX.value = withTiming(-1000, { duration: 500 }, finished => {
+    if (isPress) {
+      translateX.value = withTiming(-1000, { duration: 300 }, finished => {
         if (finished) {
           runOnJS(deleteItem)();
         }
       });
     }
-  }, [isDeleting, translateX, deleteItem]);
+  }, [isPress, translateX, deleteItem]);
 
   return animatedStyle;
 };

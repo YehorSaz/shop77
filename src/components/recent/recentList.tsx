@@ -5,11 +5,11 @@ import React, { FC } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { IRecent } from '../../interfaces';
+import { IList } from '../../interfaces';
 import { listActions } from '../../redux';
 
 interface IProps {
-  data: IRecent;
+  data: IList;
 }
 
 export const RecentList: FC<IProps> = ({ data }) => {
@@ -39,7 +39,6 @@ export const RecentList: FC<IProps> = ({ data }) => {
     dispatch(listActions.saveToRecentLists());
     if (!showNotification) {
       dispatch(listActions.restoreRecent(item));
-      dispatch(listActions.setTrigger());
       navigate('Список');
     } else {
       Alert.alert('Відновити список?', '', [
@@ -50,7 +49,6 @@ export const RecentList: FC<IProps> = ({ data }) => {
           text: 'так',
           onPress: () => {
             dispatch(listActions.restoreRecent(item));
-            dispatch(listActions.setTrigger());
             navigate('Список');
           },
         },

@@ -21,8 +21,8 @@ export const Settings = () => {
         <View style={styles.settingsItem}>
           <Text style={styles.settingsItemText}>Показувати попередження</Text>
           <Switch
-            trackColor={{ false: '#35628c', true: '#699bca' }}
-            thumbColor={showNotification ? '#50b377' : '#93b5c6'}
+            trackColor={{ false: '#bab9b9', true: '#82c2bc' }}
+            thumbColor={showNotification ? '#159789' : '#f2f3f3'}
             onValueChange={toggleSwitch}
             value={showNotification}
           />

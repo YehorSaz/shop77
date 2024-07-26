@@ -1,15 +1,7 @@
 import { faMicrophone, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
-import React, {
-  Dispatch,
-  FC,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
   Keyboard,
@@ -24,21 +16,17 @@ import FastImage from 'react-native-fast-image';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 import { addId, capitalizeString } from '../../helpers';
-import { useAppDispatch, useAppSelector, useTitle } from '../../hooks';
+import { useAppDispatch } from '../../hooks';
 import { listActions } from '../../redux';
 import micGif from './assets/micro_128.gif';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']);
 
-interface IProps {
-  setIsInputVisible: Dispatch<SetStateAction<boolean>>;
-}
-
-export const Input: FC<IProps> = ({ setIsInputVisible }) => {
+export const Input: FC = () => {
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const { width: screenWidth, height: screenHeight } = dimensions;
 
-  const { list } = useAppSelector(state => state.list);
+  // const { list } = useAppSelector(state => state.list);
   const dispatch = useAppDispatch();
 
   const [value, setValue] = useState<string>('');
@@ -61,13 +49,9 @@ export const Input: FC<IProps> = ({ setIsInputVisible }) => {
 
   useEffect(() => {
     if (results) {
-      if (list === null) {
-        const title = useTitle();
-        dispatch(listActions.setTitle(title));
-      }
       const res = addId(capitalizeString(results));
       if (!isMulti) {
-        dispatch(listActions.setData(res));
+        dispatch(listActions.addPurchase(res));
       } else {
         const resArr = results.split(' ');
         dispatch(listActions.addMultiLine(resArr));
@@ -76,7 +60,7 @@ export const Input: FC<IProps> = ({ setIsInputVisible }) => {
       dispatch(listActions.setTrigger());
       setResults('');
     }
-  }, [results, isMulti, list]);
+  }, [results]);
 
   useEffect(() => {
     Voice.onSpeechStart = onSpeechStart;
@@ -86,15 +70,14 @@ export const Input: FC<IProps> = ({ setIsInputVisible }) => {
     };
   }, []);
 
-  const handlePlusPress = () => {
+  const handlePlusPress = useCallback(() => {
     setIsPlus(false);
     setTimeout(() => {
       inRef.current?.focus();
     }, 50);
-  };
+  }, []);
 
   const handleKeyboardHide = useCallback(() => {
-    setIsInputVisible(true);
     setIsPlus(true);
     setValue('');
     inRef.current?.clear();
@@ -123,6 +106,7 @@ export const Input: FC<IProps> = ({ setIsInputVisible }) => {
   };
 
   const startRecognizing = async () => {
+    Keyboard.dismiss();
     clearState();
     setIsListening(true);
     try {
@@ -150,20 +134,16 @@ export const Input: FC<IProps> = ({ setIsInputVisible }) => {
     setIsPlus(false);
   }, []);
 
-  const handleBlur = useCallback(() => {
-    setIsInputVisible(false);
-  }, []);
+  const handleBlur = () => {
+    dispatch(listActions.isInputFieldVisible(false));
+  };
 
-  const saveList = useCallback(() => {
+  const saveList = () => {
     if (value) {
-      if (list === null) {
-        const title = useTitle();
-        dispatch(listActions.setTitle(title));
-      }
       const purchase = addId(value);
-      dispatch(listActions.setData(purchase));
+      dispatch(listActions.addPurchase(purchase));
     }
-  }, [value, list]);
+  };
 
   const handleSubmitEditing = useCallback(() => {
     saveList();

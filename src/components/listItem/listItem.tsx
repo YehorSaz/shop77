@@ -4,15 +4,7 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import React, {
-  Dispatch,
-  FC,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Keyboard,
   StyleSheet,
@@ -33,10 +25,9 @@ import { listActions } from '../../redux';
 
 interface IProps {
   purchase: IPurchase;
-  setIsInputVisible: Dispatch<SetStateAction<boolean>>;
 }
 
-export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
+export const ListItem: FC<IProps> = ({ purchase }) => {
   const { isDrawerVisible } = useAppSelector(state => state.list);
   const dispatch = useAppDispatch();
 
@@ -44,17 +35,11 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
 
   const [isCommentVisible, setIsCommentVisible] = useState<boolean>(false);
   const [text, setText] = useState<string | null>(null);
-  const [keyboardDidShow, setKeyboardDidShow] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const handleKeyboardHide = useCallback(() => {
-    setKeyboardDidShow(false);
     setText(null);
     setIsCommentVisible(false);
-  }, []);
-
-  const handleKeyboardShow = useCallback(() => {
-    setKeyboardDidShow(true);
   }, []);
 
   useEffect(() => {
@@ -62,51 +47,33 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
       'keyboardDidHide',
       handleKeyboardHide,
     );
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      handleKeyboardShow,
-    );
-
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, [handleKeyboardHide, handleKeyboardShow]);
+    return () => keyboardDidHideListener.remove();
+  }, [handleKeyboardHide]);
 
   useEffect(() => {
     dispatch(listActions.isDrawerVisible(false));
-    dispatch(listActions.isInputVisible(true));
   }, [isDrawerVisible]);
 
-  const deleteItem = useCallback(() => {
+  const deleteItem = () => {
     dispatch(listActions.delItemFromList(purchase));
-  }, [purchase]);
+  };
 
-  const mark = useCallback(() => {
+  const mark = () => {
+    // Keyboard.dismiss();
     dispatch(listActions.delItemFromList(purchase));
     dispatch(listActions.setSelected(purchase));
-  }, [purchase]);
+  };
 
-  const handlePress = useCallback(() => {
-    if (keyboardDidShow) {
-      setIsCommentVisible(true);
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 50);
-    } else {
-      setIsInputVisible(false);
-      setIsCommentVisible(true);
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 50);
-    }
-  }, [keyboardDidShow, setIsInputVisible]);
+  const handlePress = () => {
+    setIsCommentVisible(true);
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0.1);
+  };
 
-  const onSubmit = useCallback(() => {
+  const onSubmit = () => {
     dispatch(
       listActions.addComment({
         id: purchase.id,
@@ -116,12 +83,12 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
     );
     setText(null);
     setIsCommentVisible(false);
-  }, [purchase, text]);
+  };
 
-  const dellComment = useCallback(() => {
+  const dellComment = () => {
     dispatch(listActions.dellComment(purchase));
     setText(null);
-  }, [purchase]);
+  };
 
   const handleDeletePress = useCallback(() => {
     setIsDeleting(true);
@@ -129,16 +96,17 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
 
   const animatedStyle = useDeleteAnimation(isDeleting, deleteItem);
 
-  const handleBlur = useCallback(() => {
-    setIsCommentVisible(false);
-    setTimeout(() => {
-      setText(null);
-    }, 300);
-  }, []);
+  const handleFocus = useCallback(() => {}, []);
 
-  const handleFocus = useCallback(() => {
-    setIsInputVisible(false);
-  }, [setIsInputVisible]);
+  const handleBlur = () => {
+    setIsCommentVisible(false);
+    setText(null);
+  };
+
+  const closeComment = () => {
+    setIsCommentVisible(false);
+    setText(null);
+  };
 
   return (
     <Animated.View
@@ -155,7 +123,7 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
               <Text style={styles.commentText}>{purchase.comment}</Text>
               <TouchableOpacity onPress={dellComment}>
                 <FontAwesomeIcon
-                  size={25}
+                  size={30}
                   icon={faXmark}
                   color={'rgba(128,51,51,0.75)'}
                 />
@@ -173,19 +141,14 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
           placeholderTextColor={'rgba(26,90,124,0.74)'}
           onChangeText={setText}
           value={text || ''}
-          blurOnSubmit={false}
-          onBlur={handleBlur}
           onFocus={handleFocus}
+          onBlur={handleBlur}
+          blurOnSubmit={false}
           onSubmitEditing={onSubmit}
         />
       </View>
       {isCommentVisible ? (
-        <TouchableOpacity
-          onPress={() => {
-            setIsCommentVisible(false);
-            setText(null);
-          }}
-        >
+        <TouchableOpacity style={styles.xButton} onPress={closeComment}>
           <FontAwesomeIcon
             size={25}
             icon={faXmark}
@@ -215,7 +178,7 @@ export const ListItem: FC<IProps> = ({ purchase, setIsInputVisible }) => {
 const styles = StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
-    alignItems: 'center',
+    // alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
     elevation: 16,
@@ -223,12 +186,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(136,215,243,1)',
     marginVertical: 2,
     paddingHorizontal: 20,
+    paddingVertical: 5,
     borderRadius: 5,
   },
   textWrapper: {
     width: '60%',
     flexDirection: 'column',
-    justifyContent: 'space-around',
   },
   text: {
     width: '100%',
@@ -237,18 +200,27 @@ const styles = StyleSheet.create({
     color: '#28475e',
     textAlignVertical: 'center',
   },
+  xButton: {
+    width: '20%',
+    // height: '95%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   delBtn: {
     width: '20%',
+    minHeight: 25,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   commentBtn: {
     width: '20%',
+    height: 'auto',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   commentTextWrapper: {
     width: '80%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   commentText: {
     height: 'auto',
@@ -256,6 +228,8 @@ const styles = StyleSheet.create({
     color: '#35628c',
     fontSize: 16,
     fontStyle: 'italic',
+    margin: 0,
+    padding: 0,
   },
   input: {
     maxWidth: '100%',

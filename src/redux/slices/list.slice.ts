@@ -2,15 +2,15 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { addId, capitalizeString } from '../../helpers';
 import { useTitle } from '../../hooks';
-import { IPurchase, IRecent } from '../../interfaces';
+import { IList, IPurchase } from '../../interfaces';
 
 interface IState {
-  list: IPurchase[] | null;
+  list: IList | null;
   trigger: boolean;
   title: string;
   selected: IPurchase[] | null;
-  recentList: IRecent[];
-  isInputWrapperVisible: boolean;
+  recentList: IList[];
+  isInputFieldVisible: boolean;
   isDrawerVisible: boolean;
   showNotification: boolean;
 }
@@ -21,7 +21,7 @@ const initialState: IState = {
   title: '',
   selected: null,
   recentList: [],
-  isInputWrapperVisible: true,
+  isInputFieldVisible: true,
   isDrawerVisible: false,
   showNotification: true,
 };
@@ -30,29 +30,26 @@ const listSlice = createSlice({
   name: 'listSlice',
   initialState,
   reducers: {
-    setData: (state, action: { payload: IPurchase }) => {
+    addPurchase: (state, action: { payload: IPurchase }) => {
       if (state.list === null) {
-        state.list = new Array(action.payload);
+        const date = useTitle();
+        state.list = {
+          title: date,
+          data: [action.payload],
+        };
       } else {
-        state.list.push(action.payload);
+        state.list.data.unshift(action.payload);
       }
     },
     delItemFromList: (state, action: { payload: IPurchase }) => {
-      const index = state.list.findIndex(item => action.payload.id === item.id);
-      state.list.splice(index, 1);
-    },
-    clearData: state => {
-      state.list = null;
-      state.selected = null;
+      const index = state.list.data.findIndex(
+        item => action.payload.id === item.id,
+      );
+      state.list.data.splice(index, 1);
+      // if (state.list.data.length === 0) state.list = null;
     },
     setTrigger: state => {
       state.trigger = !state.trigger;
-    },
-    setTitle: (state, action) => {
-      state.title = action.payload;
-    },
-    clearTitle: state => {
-      state.title = '';
     },
     setSelected: (state, action: { payload: IPurchase }) => {
       if (state.selected === null) {
@@ -66,36 +63,26 @@ const listSlice = createSlice({
         item => action.payload.id === item.id,
       );
       state.selected.splice(index, 1);
+      if (state.selected.length === 0) state.selected = null;
     },
     backToList: (state, action: { payload: IPurchase }) => {
       const index = state.selected.findIndex(
         item => action.payload.id === item.id,
       );
       const item = state.selected.splice(index, 1);
-      state.list.push(...item);
+      state.list.data.unshift(...item);
     },
     saveToRecentLists: state => {
-      if (state.list === null || state.list.length === 0) {
+      if (state.list === null && state.selected === null) {
         return;
       } else {
-        const recent = [] as IPurchase[];
-        if (state.list) {
-          recent.push(...state.list);
-        }
         if (state.selected) {
-          recent.push(...state.selected);
+          state.list.data.push(...state.selected);
         }
-        const dataToSave: IRecent = {
-          title: state.title,
-          data: recent,
-        };
-
-        if (state.recentList) {
-          state.recentList.push(dataToSave);
-        } else {
-          state.recentList = new Array(dataToSave);
-        }
+        state.recentList.push(state.list);
       }
+      state.list = null;
+      state.selected = null;
     },
     removeRecentItem: (state, action) => {
       state.recentList = state.recentList.filter(
@@ -104,31 +91,33 @@ const listSlice = createSlice({
     },
     addComment: (state, action: { payload: IPurchase }) => {
       const data = action.payload;
-      const index = state.list.findIndex(item => data.id === item.id);
-      state.list[index].comment = data.comment;
+      const index = state.list.data.findIndex(item => data.id === item.id);
+      state.list.data[index].comment = data.comment;
     },
     dellComment: (state, action: { payload: IPurchase }) => {
       const data = action.payload;
-      const index = state.list.findIndex(item => data.id === item.id);
-      state.list[index].comment = '';
+      const index = state.list.data.findIndex(item => data.id === item.id);
+      state.list.data[index].comment = '';
     },
     addMultiLine: (state, action: { payload: string[] }) => {
-      const data = action.payload;
+      const purchasesArr = action.payload;
+      const purchases = [] as IPurchase[];
+      for (const elem in purchasesArr) {
+        const purchase = addId(capitalizeString(purchasesArr[elem]));
+        purchases.push(purchase);
+      }
       if (state.list === null) {
-        state.list = [] as IPurchase[];
-        for (const elem in data) {
-          const purchase = addId(capitalizeString(data[elem]));
-          state.list.push(purchase);
-        }
+        const date = useTitle();
+        state.list = {
+          title: date,
+          data: purchases,
+        };
       } else {
-        for (const elem in data) {
-          const purchase = addId(capitalizeString(data[elem]));
-          state.list.push(purchase);
-        }
+        state.list.data.push(...purchases);
       }
     },
-    isInputVisible: (state, action: { payload: boolean }) => {
-      state.isInputWrapperVisible = action.payload;
+    isInputFieldVisible: (state, action: { payload: boolean }) => {
+      state.isInputFieldVisible = action.payload;
     },
     isDrawerVisible: (state, action: { payload: boolean }) => {
       state.isDrawerVisible = action.payload;
@@ -138,8 +127,10 @@ const listSlice = createSlice({
       const index = state.recentList.findIndex(
         item => item.title === action.payload,
       );
-      state.list = [...state.recentList[index].data];
-      state.title = date;
+      state.list = {
+        title: date,
+        data: state.recentList[index].data,
+      };
     },
     showNotification: (state, action: { payload: boolean }) => {
       state.showNotification = action.payload;
