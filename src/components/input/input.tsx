@@ -26,7 +26,6 @@ export const Input: FC = () => {
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const { width: screenWidth, height: screenHeight } = dimensions;
 
-  // const { list } = useAppSelector(state => state.list);
   const dispatch = useAppDispatch();
 
   const [value, setValue] = useState<string>('');

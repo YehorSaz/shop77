@@ -14,11 +14,12 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { listActions } from '../../redux';
+import { ListNavigationProps } from '../../types/navTypes.ts';
 
 export const Header: FC = () => {
   const { list, showNotification } = useAppSelector(state => state.list);
 
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<ListNavigationProps>();
 
   const dispatch = useAppDispatch();
 

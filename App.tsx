@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { persistor, store } from './src/redux';
+import { RouterNames } from './src/routerNames';
 import { MainScreen, RecentScreen, SettingsScreen } from './src/screens';
 
 const Drawer = createDrawerNavigator();
@@ -15,7 +16,7 @@ const App: FC = () => {
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
           <Drawer.Navigator
-            initialRouteName={'Список'}
+            initialRouteName={RouterNames.LIST}
             screenOptions={{
               drawerPosition: 'right',
               headerShown: false,
@@ -23,13 +24,16 @@ const App: FC = () => {
               drawerStyle: { backgroundColor: '#fdfdfd' },
             }}
           >
-            <Drawer.Screen name="Список" component={MainScreen} />
+            <Drawer.Screen name={RouterNames.LIST} component={MainScreen} />
             <Drawer.Screen
-              name="recent"
+              name={RouterNames.RECENT}
               component={RecentScreen}
               options={{ title: 'Архів' }}
             />
-            <Drawer.Screen name="Налаштування" component={SettingsScreen} />
+            <Drawer.Screen
+              name={RouterNames.SETTINGS}
+              component={SettingsScreen}
+            />
           </Drawer.Navigator>
         </NavigationContainer>
       </PersistGate>

@@ -5,9 +5,11 @@ import React, { FC } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Recent } from '../../components/recent';
+import { RouterNames } from '../../routerNames';
+import { RecentNavigationProps } from '../../types/navTypes.ts';
 
 export const RecentScreen: FC = ({ navigation }: any) => {
-  const { navigate } = useNavigation<any>();
+  const { navigate } = useNavigation<RecentNavigationProps>();
 
   return (
     <View style={styles.wrapper}>
@@ -29,7 +31,7 @@ export const RecentScreen: FC = ({ navigation }: any) => {
       <View style={styles.footer}>
         <Text
           style={{ fontSize: 22, fontWeight: '600', color: '#35628c' }}
-          onPress={() => navigate('Список')}
+          onPress={() => navigate(RouterNames.LIST)}
         >
           назад
         </Text>

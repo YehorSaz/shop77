@@ -7,6 +7,8 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { IList } from '../../interfaces';
 import { listActions } from '../../redux';
+import { RouterNames } from '../../routerNames';
+import { RecentNavigationProps } from '../../types/navTypes.ts';
 
 interface IProps {
   data: IList;
@@ -17,7 +19,7 @@ export const RecentList: FC<IProps> = ({ data }) => {
 
   const dispatch = useAppDispatch();
 
-  const { navigate } = useNavigation<any>();
+  const { navigate } = useNavigation<RecentNavigationProps>();
 
   const removeItem = (item: string) => {
     if (!showNotification) {
@@ -39,7 +41,7 @@ export const RecentList: FC<IProps> = ({ data }) => {
     dispatch(listActions.saveToRecentLists());
     if (!showNotification) {
       dispatch(listActions.restoreRecent(item));
-      navigate('Список');
+      navigate(RouterNames.LIST);
     } else {
       Alert.alert('Відновити список?', '', [
         {
@@ -49,7 +51,7 @@ export const RecentList: FC<IProps> = ({ data }) => {
           text: 'так',
           onPress: () => {
             dispatch(listActions.restoreRecent(item));
-            navigate('Список');
+            navigate(RouterNames.LIST);
           },
         },
       ]);

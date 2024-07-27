@@ -4,11 +4,12 @@ import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { listActions } from '../../redux';
+import { SettingsNavigationProps } from '../../types/navTypes.ts';
 
 export const Settings = () => {
   const { showNotification } = useAppSelector(state => state.list);
   const dispatch = useAppDispatch();
-  const { goBack } = useNavigation();
+  const { goBack } = useNavigation<SettingsNavigationProps>();
 
   const toggleSwitch = () => {
     dispatch(listActions.showNotification(!showNotification));
