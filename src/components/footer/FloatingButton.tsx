@@ -30,7 +30,7 @@ import { DefaultStyle } from 'react-native-reanimated/lib/typescript/hook/common
 import { addId, capitalizeString } from '../../helpers';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { listActions } from '../../redux';
-import micGif from '../input/assets/micro_128.gif';
+import micGif from './assets/micro_128.gif';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']);
 
