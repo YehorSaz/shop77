@@ -73,6 +73,7 @@ export const Header: FC = () => {
         ) : null}
         <Text
           onPress={() => {
+            dispatch(listActions.isInputFieldVisible(true));
             Keyboard.dismiss();
             navigation.toggleDrawer();
           }}

@@ -328,8 +328,8 @@ const createStyles = (width: number, height: number) =>
 const mainButtonStyles = StyleSheet.create({
   button: {
     zIndex: 1,
-    height: 70,
-    width: 70,
+    height: 80,
+    width: 80,
     borderRadius: 100,
     backgroundColor: '#5f88cc',
     justifyContent: 'center',
@@ -351,8 +351,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(136,215,243,1)',
   },
   button: {
-    width: 70,
-    height: 70,
+    width: 80,
+    height: 80,
     backgroundColor: 'rgba(136,215,243,1)',
     position: 'absolute',
     borderRadius: 100,
