@@ -114,6 +114,7 @@ export const FloatingButton = () => {
   const inputRef = useRef<TextInput>();
 
   const handleKeyboardHide = useCallback(() => {
+    dispatch(listActions.isInputFieldVisible(true));
     setShowInput(false);
     setValue('');
     inputRef.current?.clear();
