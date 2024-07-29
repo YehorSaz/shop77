@@ -226,7 +226,6 @@ export const FloatingButton = () => {
   };
 
   const handlePencilPress = () => {
-    // setIsInputAppeared(true);
     dispatch(listActions.isInputFieldVisible(false));
     setShowInput(true);
     setTimeout(() => {

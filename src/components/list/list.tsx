@@ -1,20 +1,12 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import { listActions } from '../../redux';
+import { useAppSelector } from '../../hooks';
 import { ListItem } from '../listItem';
 import { ListSelected } from '../listItem/listSelected.tsx';
 
 export const List: FC = () => {
-  const dispatch = useAppDispatch();
-  const { list, selected, isDrawerVisible } = useAppSelector(
-    state => state.list,
-  );
-
-  useEffect(() => {
-    dispatch(listActions.isDrawerVisible(false));
-  }, [isDrawerVisible]);
+  const { list, selected } = useAppSelector(state => state.list);
 
   return (
     <ScrollView style={styles.wrapper} keyboardShouldPersistTaps={'handled'}>

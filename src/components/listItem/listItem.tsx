@@ -15,11 +15,7 @@ import {
 } from 'react-native';
 import Animated, { SlideInLeft } from 'react-native-reanimated';
 
-import {
-  useAppDispatch,
-  useAppSelector,
-  useDeleteAnimation,
-} from '../../hooks';
+import { useAppDispatch, useDeleteAnimation } from '../../hooks';
 import { IPurchase } from '../../interfaces';
 import { listActions } from '../../redux';
 
@@ -28,7 +24,6 @@ interface IProps {
 }
 
 export const ListItem: FC<IProps> = ({ purchase }) => {
-  const { isDrawerVisible } = useAppSelector(state => state.list);
   const dispatch = useAppDispatch();
 
   const inputRef = useRef<TextInput>(null);
@@ -49,10 +44,6 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
     );
     return () => keyboardDidHideListener.remove();
   }, [handleKeyboardHide]);
-
-  useEffect(() => {
-    dispatch(listActions.isDrawerVisible(false));
-  }, [isDrawerVisible]);
 
   const deleteItem = () => {
     dispatch(listActions.delItemFromList(purchase));

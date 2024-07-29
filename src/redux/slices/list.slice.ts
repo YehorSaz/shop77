@@ -11,7 +11,6 @@ interface IState {
   selected: IPurchase[] | null;
   recentList: IList[];
   isInputFieldVisible: boolean;
-  isDrawerVisible: boolean;
   showNotification: boolean;
 }
 
@@ -22,7 +21,6 @@ const initialState: IState = {
   selected: null,
   recentList: [],
   isInputFieldVisible: true,
-  isDrawerVisible: false,
   showNotification: true,
 };
 
@@ -46,7 +44,7 @@ const listSlice = createSlice({
         item => action.payload.id === item.id,
       );
       state.list.data.splice(index, 1);
-      // if (state.list.data.length === 0) state.list = null;
+      if (state.list.data?.length === 0) state.list = null;
     },
     setTrigger: state => {
       state.trigger = !state.trigger;
@@ -63,7 +61,7 @@ const listSlice = createSlice({
         item => action.payload.id === item.id,
       );
       state.selected.splice(index, 1);
-      if (state.selected.length === 0) state.selected = null;
+      if (state.selected?.length === 0) state.selected = null;
     },
     backToList: (state, action: { payload: IPurchase }) => {
       const index = state.selected.findIndex(
@@ -118,9 +116,6 @@ const listSlice = createSlice({
     },
     isInputFieldVisible: (state, action: { payload: boolean }) => {
       state.isInputFieldVisible = action.payload;
-    },
-    isDrawerVisible: (state, action: { payload: boolean }) => {
-      state.isDrawerVisible = action.payload;
     },
     restoreRecent: (state, action: { payload: string }) => {
       const date = useTitle();

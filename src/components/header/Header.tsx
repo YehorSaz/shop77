@@ -46,10 +46,6 @@ export const Header: FC = () => {
     }, 50);
   };
 
-  const setDrawerVisibility = (isVisible: boolean) => {
-    dispatch(listActions.isDrawerVisible(isVisible));
-  };
-
   const hideDialog = () => {
     setIsDialog(false);
     setTimeout(() => {}, 200);
@@ -78,7 +74,6 @@ export const Header: FC = () => {
         <Text
           onPress={() => {
             Keyboard.dismiss();
-            setDrawerVisibility(true);
             navigation.toggleDrawer();
           }}
           style={{
