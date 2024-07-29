@@ -44,7 +44,7 @@ const listSlice = createSlice({
         item => action.payload.id === item.id,
       );
       state.list.data.splice(index, 1);
-      if (state.list.data?.length === 0) state.list = null;
+      // if (state.list.data?.length === 0) state.list = null;
     },
     setTrigger: state => {
       state.trigger = !state.trigger;
@@ -72,6 +72,13 @@ const listSlice = createSlice({
     },
     saveToRecentLists: state => {
       if (state.list === null && state.selected === null) {
+        return;
+      } else if (
+        state.list.data?.length === 0 &&
+        (state.selected === null || state.selected?.length === 0)
+      ) {
+        state.list = null;
+        state.selected = null;
         return;
       } else {
         if (state.selected) {
