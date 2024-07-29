@@ -1,8 +1,9 @@
 import { faCommentDots } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
-import React, { FC } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { FC, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Button, Dialog, Portal, Text } from 'react-native-paper';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { IList } from '../../interfaces';
@@ -20,21 +21,20 @@ export const RecentList: FC<IProps> = ({ data }) => {
   const dispatch = useAppDispatch();
 
   const { navigate } = useNavigation<RecentNavigationProps>();
+  const [isDialog, setIsDialog] = useState(false);
+  const [isRestoreDialog, setIsRestoreDialog] = useState(false);
 
   const removeItem = (item: string) => {
     if (!showNotification) {
       dispatch(listActions.removeRecentItem(item));
     } else {
-      Alert.alert('Видалити список?', '', [
-        {
-          text: 'ні',
-        },
-        {
-          text: 'так',
-          onPress: () => dispatch(listActions.removeRecentItem(item)),
-        },
-      ]);
+      setIsDialog(true);
     }
+  };
+
+  const delItem = (item: string) => {
+    dispatch(listActions.removeRecentItem(item));
+    hideDialog();
   };
 
   const restoreItem = (item: string) => {
@@ -43,20 +43,17 @@ export const RecentList: FC<IProps> = ({ data }) => {
       dispatch(listActions.restoreRecent(item));
       navigate(RouterNames.LIST);
     } else {
-      Alert.alert('Відновити список?', '', [
-        {
-          text: 'ні',
-        },
-        {
-          text: 'так',
-          onPress: () => {
-            dispatch(listActions.restoreRecent(item));
-            navigate(RouterNames.LIST);
-          },
-        },
-      ]);
+      setIsRestoreDialog(true);
     }
   };
+  const restoreList = (item: string) => {
+    dispatch(listActions.restoreRecent(item));
+    hideRestoreDialog();
+    navigate(RouterNames.LIST);
+  };
+
+  const hideDialog = () => setIsDialog(false);
+  const hideRestoreDialog = () => setIsRestoreDialog(false);
 
   return (
     <View style={styles.wrapper}>
@@ -123,6 +120,30 @@ export const RecentList: FC<IProps> = ({ data }) => {
           </Text>
         </TouchableOpacity>
       </View>
+      <Portal>
+        <Dialog visible={isDialog} onDismiss={hideDialog}>
+          <Dialog.Title>Попередження</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">Видалити список на завжди?</Text>
+            <Text variant="bodyLarge">{data.title}</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>Ні</Button>
+            <Button onPress={() => delItem(data.title)}>Так</Button>
+          </Dialog.Actions>
+        </Dialog>
+        <Dialog visible={isRestoreDialog} onDismiss={hideRestoreDialog}>
+          <Dialog.Title>Попередження</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">Відновити список?</Text>
+            <Text variant="bodyLarge">{data.title}</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideRestoreDialog}>Ні</Button>
+            <Button onPress={() => restoreList(data.title)}>Так</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </View>
   );
 };

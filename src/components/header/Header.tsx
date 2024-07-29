@@ -2,15 +2,9 @@ import { faBars, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import React, { FC, useEffect, useState } from 'react';
-import {
-  Alert,
-  Keyboard,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { Button, Dialog, Portal, Text } from 'react-native-paper';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { listActions } from '../../redux';
@@ -23,7 +17,8 @@ export const Header: FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const [listTitle, setListTitle] = useState<string>('');
+  const [listTitle, setListTitle] = useState('');
+  const [isDialog, setIsDialog] = useState(false);
 
   useEffect(() => {
     if (list?.title) {
@@ -34,25 +29,30 @@ export const Header: FC = () => {
 
   const remove = () => {
     if (!showNotification) {
-      dispatch(listActions.saveToRecentLists());
-      setListTitle('');
+      setTimeout(() => {
+        dispatch(listActions.saveToRecentLists());
+        setListTitle('');
+      }, 50);
     } else {
-      Alert.alert('Перемістити список в архів?', '', [
-        {
-          text: 'ні',
-        },
-        {
-          text: 'так',
-          onPress: () => {
-            dispatch(listActions.saveToRecentLists());
-            setListTitle('');
-          },
-        },
-      ]);
+      setIsDialog(true);
     }
   };
+  const moveToRecent = () => {
+    setTimeout(() => {
+      dispatch(listActions.saveToRecentLists());
+
+      setListTitle('');
+      hideDialog();
+    }, 50);
+  };
+
   const setDrawerVisibility = (isVisible: boolean) => {
     dispatch(listActions.isDrawerVisible(isVisible));
+  };
+
+  const hideDialog = () => {
+    setIsDialog(false);
+    setTimeout(() => {}, 200);
   };
 
   return (
@@ -93,6 +93,18 @@ export const Header: FC = () => {
           />
         </Text>
       </LinearGradient>
+      <Portal>
+        <Dialog visible={isDialog} onDismiss={hideDialog}>
+          <Dialog.Title>Попередження</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">Перемістити список в архів?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>Ні</Button>
+            <Button onPress={moveToRecent}>Так</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </View>
   );
 };
@@ -125,5 +137,9 @@ const styles = StyleSheet.create({
     shadowColor: '#1c1a1a',
     elevation: 13,
     backgroundColor: '#FFFFFFFF',
+  },
+  indicator: {
+    width: 500,
+    height: 500,
   },
 });

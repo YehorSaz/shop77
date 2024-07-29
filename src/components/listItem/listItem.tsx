@@ -38,8 +38,8 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const handleKeyboardHide = useCallback(() => {
-    setText(null);
-    setIsCommentVisible(false);
+    dispatch(listActions.isInputFieldVisible(true));
+    inputRef.current.blur();
   }, []);
 
   useEffect(() => {
@@ -59,12 +59,13 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
   };
 
   const mark = () => {
-    // Keyboard.dismiss();
     dispatch(listActions.delItemFromList(purchase));
     dispatch(listActions.setSelected(purchase));
   };
 
   const handlePress = () => {
+    dispatch(listActions.isInputFieldVisible(false));
+    setText(purchase.comment);
     setIsCommentVisible(true);
     setTimeout(() => {
       if (inputRef.current) {
@@ -83,6 +84,7 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
     );
     setText(null);
     setIsCommentVisible(false);
+    dispatch(listActions.isInputFieldVisible(true));
   };
 
   const dellComment = () => {
@@ -100,7 +102,7 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
 
   const handleBlur = () => {
     setIsCommentVisible(false);
-    setText(null);
+    // setText(null);
   };
 
   const closeComment = () => {
@@ -119,11 +121,17 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
             - {purchase.item}
           </Text>
           {purchase.comment && (
-            <View style={styles.commentTextWrapper}>
+            <View
+              style={
+                !isCommentVisible
+                  ? styles.commentTextWrapper
+                  : { display: 'none' }
+              }
+            >
               <Text style={styles.commentText}>{purchase.comment}</Text>
               <TouchableOpacity onPress={dellComment}>
                 <FontAwesomeIcon
-                  size={30}
+                  size={25}
                   icon={faXmark}
                   color={'rgba(128,51,51,0.75)'}
                 />
@@ -137,13 +145,14 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
           ref={inputRef}
           textAlignVertical={'top'}
           verticalAlign={'top'}
+          multiline={true}
           placeholder={'коментар...'}
           placeholderTextColor={'rgba(26,90,124,0.74)'}
           onChangeText={setText}
           value={text || ''}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          blurOnSubmit={false}
+          blurOnSubmit={true}
           onSubmitEditing={onSubmit}
         />
       </View>
@@ -178,7 +187,6 @@ export const ListItem: FC<IProps> = ({ purchase }) => {
 const styles = StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
-    // alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
     elevation: 16,
@@ -204,7 +212,7 @@ const styles = StyleSheet.create({
     width: '20%',
     // height: '95%',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
   },
   delBtn: {
     width: '20%',
@@ -232,8 +240,12 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   input: {
-    maxWidth: '100%',
-    color: 'rgba(26,90,124,0.99)',
+    margin: 0,
+    padding: 0,
+    color: '#35628c',
+    fontSize: 16,
+    width: '100%',
+    // color: 'rgba(26,90,124,0.99)',
   },
   displayNone: {
     display: 'none',

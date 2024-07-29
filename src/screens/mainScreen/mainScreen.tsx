@@ -36,6 +36,6 @@ const styles = StyleSheet.create({
   filter: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(174,207,246,0.79)',
+    backgroundColor: 'rgba(199,220,246,0.85)',
   },
 });
