@@ -258,7 +258,7 @@ export const FloatingButton = () => {
             style={styles.textInput}
             autoCorrect={false}
             placeholder={'додати продукт...'}
-            placeholderTextColor={'rgba(26,90,124,0.74)'}
+            placeholderTextColor={'rgb(0,0,0)'}
             onChangeText={text => setValue(text)}
             value={value || ''}
             blurOnSubmit={false}
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    right: 20,
+    right: 15,
     bottom: 20,
   },
   shadow: {
