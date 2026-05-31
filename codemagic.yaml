@@ -9,7 +9,6 @@ workflows:
     scripts:
       - name: Verify and print Node version
         script: |
-          # Перевіряємо, яка версія вже є в системі за замовчуванням
           node -v
           npm -v
       - name: Clear sub-node_modules
@@ -21,7 +20,6 @@ workflows:
           npm install
       - name: Fix Reanimated version check
         script: |
-          # Вимикаємо перевірку версії в Reanimated
           sed -i '' 's/assert_minimal_react_native_version/# assert_minimal_react_native_version/g' node_modules/react-native-reanimated/RNReanimated.podspec || true
       - name: Install CocoaPods
         script: |
@@ -37,5 +35,10 @@ workflows:
                      CODE_SIGNING_ALLOWED=NO \
                      CODE_SIGNING_REQUIRED=NO \
                      clean build
+          
+          # Створюємо правильну структуру Payload для побудови додатка для AltStore
+          mkdir -p build/Payload
+          cp -r build/Build/Products/Release-iphoneos/shop77.app build/Payload/
+          cd build && zip -r shop77.ipa Payload
     artifacts:
-      - build/Build/Products/Release-iphoneos/*.app
+      - build/*.ipa
