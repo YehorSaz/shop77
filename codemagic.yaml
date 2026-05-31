@@ -28,17 +28,19 @@ workflows:
           pod install
       - name: Build iOS Application (Unsigned)
         script: |
+          # Запускаємо чисту збірку в спеціальну папку всередині проєкту
           xcodebuild -workspace ios/shop77.xcworkspace \
                      -scheme shop77 \
                      -configuration Release \
                      -sdk iphoneos \
+                     -derivedDataPath build_output \
                      CODE_SIGNING_ALLOWED=NO \
                      CODE_SIGNING_REQUIRED=NO \
                      clean build
           
-          # Створюємо правильну структуру Payload для побудови додатка для AltStore
-          mkdir -p build/Payload
-          cp -r build/Build/Products/Release-iphoneos/shop77.app build/Payload/
-          cd build && zip -r shop77.ipa Payload
+          # Створюємо правильну структуру та архівуємо в .ipa для AltStore
+          mkdir -p Payload
+          cp -r build_output/Build/Products/Release-iphoneos/shop77.app Payload/
+          zip -r shop77.ipa Payload
     artifacts:
-      - build/*.ipa
+      - "*.ipa"
