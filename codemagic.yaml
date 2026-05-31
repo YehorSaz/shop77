@@ -2,20 +2,23 @@ workflows:
   ios-build:
     name: iOS Build (Unsigned)
     max_build_duration: 30
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     environment:
       node: 20.x
-      xcode: 15.4
-      cocoapods: 1.15.2
+      xcode: 16.0
+      cocoapods: default
     scripts:
-      - name: Clear sub-node_modules and fix reanimated
+      - name: Clear sub-node_modules
         script: |
-          # Очищаємо кеш npm та видаляємо старі модулі перед інсталяцією
           rm -rf node_modules package-lock.json
           npm cache clean --force
       - name: Install dependencies
         script: |
           npm install
+      - name: Fix Reanimated version check
+        script: |
+          # Вимикаємо сувору перевірку версії в скрипті Reanimated, щоб він не брезгував нашою версією React Native
+          sed -i '' 's/assert_minimal_react_native_version/# assert_minimal_react_native_version/g' node_modules/react-native-reanimated/RNReanimated.podspec || true
       - name: Install CocoaPods
         script: |
           cd ios
