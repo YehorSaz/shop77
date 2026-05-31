@@ -1,11 +1,12 @@
 import React, { FC, memo } from 'react';
 import { ImageBackground, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Footer, Header, List } from '../../components';
 
 export const MainScreen: FC = memo(() => {
   return (
-    <View style={styles.wrapper}>
+    <SafeAreaView style={styles.wrapper}>
       <ImageBackground
         source={require('./assets/img.png')}
         style={{ width: '100%', height: '100%' }}
@@ -19,7 +20,7 @@ export const MainScreen: FC = memo(() => {
           <Footer />
         </View>
       </ImageBackground>
-    </View>
+    </SafeAreaView>
   );
 });
 

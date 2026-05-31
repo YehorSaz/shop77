@@ -19,6 +19,7 @@ const initialState: IState = {
   trigger: false,
   title: '',
   selected: null,
+
   recentList: [],
   isInputFieldVisible: true,
   showNotification: true,
@@ -44,7 +45,6 @@ const listSlice = createSlice({
         item => action.payload.id === item.id,
       );
       state.list.data.splice(index, 1);
-      // if (state.list.data?.length === 0) state.list = null;
     },
     setTrigger: state => {
       state.trigger = !state.trigger;

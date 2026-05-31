@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import React, { FC } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Recent } from '../../components/recent';
 import { RouterNames } from '../../routerNames';
@@ -12,7 +13,7 @@ export const RecentScreen: FC = ({ navigation }: any) => {
   const { navigate } = useNavigation<RecentNavigationProps>();
 
   return (
-    <View style={styles.wrapper}>
+    <SafeAreaView style={styles.wrapper}>
       <View style={styles.header}>
         <Text style={{ fontSize: 22, fontWeight: '600', color: '#35628c' }}>
           Архів
@@ -36,7 +37,7 @@ export const RecentScreen: FC = ({ navigation }: any) => {
           назад
         </Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
