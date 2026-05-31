@@ -4,16 +4,23 @@ workflows:
     max_build_duration: 30
     instance_type: mac_mini_m1
     environment:
-      node: latest
-      xcode: latest
-      cocoapods: default
+      node: 20.x
+      xcode: 15.4
+      cocoapods: 1.15.2
     scripts:
+      - name: Clear sub-node_modules and fix reanimated
+        script: |
+          # Очищаємо кеш npm та видаляємо старі модулі перед інсталяцією
+          rm -rf node_modules package-lock.json
+          npm cache clean --force
       - name: Install dependencies
         script: |
           npm install
       - name: Install CocoaPods
         script: |
-          cd ios && pod install
+          cd ios
+          pod repo update
+          pod install
       - name: Build iOS Application (Unsigned)
         script: |
           xcodebuild -workspace ios/shop77.xcworkspace \
