@@ -1,0 +1,27 @@
+workflows:
+  ios-build:
+    name: iOS Build (Unsigned)
+    max_build_duration: 30
+    instance_type: mac_mini_m1
+    environment:
+      node: latest
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+      - name: Install CocoaPods
+        script: |
+          cd ios && pod install
+      - name: Build iOS Application (Unsigned)
+        script: |
+          xcodebuild -workspace ios/shop77.xcworkspace \
+                     -scheme shop77 \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGNING_REQUIRED=NO \
+                     clean build
+    artifacts:
+      - build/Build/Products/Release-iphoneos/*.app
